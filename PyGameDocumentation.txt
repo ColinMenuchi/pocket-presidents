@@ -1,0 +1,199 @@
+"""
+My Personal PyGame Documentation
+--------------------------------
+Methods:
+--------
+1. pygame.display.set_caption(str) -> Sets the title 
+   of a display window to str (a string).
+
+2. pygame.display.set_mode((w, h)) -> Creates
+   a display window of size tuple(width, height).
+
+2a. display_name.blit(image_or_surface name, (w, h)) ->
+    Places the passed surface/image on the display 
+    at the given coordinates. BLIT is short for
+    Block Image Transfer.
+
+3. pygame.display.update() -> updates display window
+
+4. pygame.font.Font(None, 50) -> Creates a font 
+   that can be used for text (Font_File, Size).
+
+4a. font_name.render('My game', False, 'White') -> 
+    Renders a text we want to display later 
+    (Text, Antialias, Color). Color can be a string,
+    a hexadecimal string, or an rgb tuple.
+
+5. pygame.image.load(image_file_name) -> Loads an 
+   image which can be displayed later.
+
+5a. .convert() -> Placed after the .load function.
+    Converts an image to a form that PyGame can work
+    with more easily, allowing your game to run
+    faster.
+
+5b. .convert_alpha() -> Placed after the .load function.
+    Converts an image to a form that PyGame can work
+    with more easily, allowing your game to run
+    faster. This also does it with respect to alpha
+    values, making for a cleaner image conversion.
+
+6. .get_rect(point=coords) -> Draws a rectangle around
+    the passed surface. Takes a keyword argument of the
+    position you would like to place the rectangle from
+    set to the coordinates you want that position at.
+
+6a. rect1.colliderect(rect2) -> Checks if rect1 is colliding
+    with rect2. Returns False if there is no collision, returns
+    True if there is.
+
+6b. rect1.collidepoint((x, y)) -> Checks if rect1 collides
+    with the given point.
+
+7. pygame.init() -> Initializes PyGame.
+
+8. pygame.Surface((w, h)) -> Creates a plain color 
+   surface which can be displayed later
+
+8a. surface_name.fill(color) -> Fills a surface with 
+    one color
+
+9. pygame.time.Clock() -> Instantiates a Clock 
+   object which controls the fps of the program.
+
+9a. clock_name.tick(fps) -> Tells PyGame this loop 
+    should not run faster than the passed fps. FPS
+    is short for Frames Per Second.
+
+10. pygame.mouse.get_pos() -> Returns a tuple containing
+    the x and y coordinates of the mouse.
+
+10a. pygame.mouse.get_pressed() -> Returns a tuple containing
+     3 booleans which indicated if any of the three mouse buttons
+     are pressed (left, middle, right).
+
+11. pygame.draw.shape(display_name, color, rectangle_name)
+    -> Draws a shape. Sub in shape for the word shape.
+       Ex: polygon, cricle, rect, arc,
+       ellipse, line, lines, aaline, aalines.
+
+11a. pygame.draw.shape(display_name, color, 
+                       rectangle_name, width,
+                       border_radius)
+
+12. pygame.key.get_pressed() -> Returns a tuple, 1 index per
+    keyboard key. False means the key is not pressed.
+    True means it is.
+
+13. pygame.time.get_ticks() -> Returns the time since
+    pygame was started in miliseconds.
+
+14. pygame.transform.scale(surface, (w, h)) -> Returns a scaled
+    copy of the passed surface to passed width and height.
+
+14a. pygame.transform.scale2x(surface) -> Scales the
+     passed surface to be 2 times larger.
+
+14b. pygame.transform.rotozoom(surface, angle, scale) ->
+     Takes passed surface and rotates it by the
+     given angle and scales it by the given scale.
+
+15. pygame.time.set_timer(event, frequency) -> Takes two
+    parameters, an event and the desired frequency of the 
+    event in miliseconds. Then creates a timer for that event.
+
+16. sprite.draw(display) -> Draws the passed sprite onto the
+    passed display.
+
+16a. spritecollide(sprite, group, dokill) -> Returns a list
+     of collided sprites.
+
+
+---------------------------------
+Concepts:
+---------
+1. When a surface if put on the display, it is not
+   just sticking there. Rather, it is getting
+   put back on the display every single frame.
+
+2. You always want a nice background for your frame.
+   Otherwise you will be able to see your previous
+   frames.
+
+3. Rectangles
+   - Help with precise positioning of surfaces.
+   - Allow you to detect basic collisions.
+   - Rectangles have positions that can be accessed
+     as tuple coordinates or individual values.
+   - Rectangles can be used to draw with
+     pygame.draw
+
+4. if event.type == pygame.MOUSEMOTION:
+            print(event.pos)
+    -Can be used to get tuple (w, h) coordinates
+    of the mouse's position.
+    -pygame.MOUSEBUTTONDOWN can be used in place 
+    to see if the mouse is being pushed down
+    -pygame.MOUSEBUTTONUP can be used in place to
+    see if the mouse is being unpressed.
+
+5. pygame.draw
+   - Draw rectangles, circles, lines, points, elipses,
+     etc.
+
+6. RGB
+   - Red, Green, Blue
+   -RGB colors are three numbers, each from 0 to 255.
+   - To use them, use a tuple of three numbers in
+     place of a color.
+
+7. Hex_Color
+   - #rrggbb
+
+8. if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                print('jump')
+    Prints 'jump' if space is pressed.
+
+9. Timers tell PyGame how often to run a certain piece
+   of code. To do this, we create a custom user event that is
+   triggered in certain time intervals.
+   Steps:
+   1. Create a Custom event
+   2. Tell PyGame to Trigger that Event Continuously
+   3. Add Code in the Event Loop.
+   4. Set a variable equal to pygame.USEREVENT + number of timers made (starting at 1)
+
+10. Enemy Spawn Logic:
+    1. Create a list of obstacle rectangles.
+    2. Everytime the timer triggers, add a new rectangle to that list.
+    3. Move every rectangle in that list to the left on every frame.
+    4. Delete rectangles too far left.
+
+11. Updated Player Collision Logic
+    - Cycle through the obstacles in the list
+    - If the player is colliding with any of them,
+      end the game.
+
+12. Animation: Place slightly different looking images in
+    rapid succession.
+
+    Player Animation: Create a timer that updates the
+    surface. If the number becomes too large, change
+    the image you are placing on the screen.
+
+    Obstacle Animation: Rely on the inbuild timers to
+    update all obstacle surfaces.
+
+13. Sprite Class
+    - A class that contains a surface and a rectangle;
+      and it can be drawn and updated very easily.
+    - To draw a sprtie, you must place spirtes inside of
+      a group or groupsingle. The you must draw/update all
+      the sprites in that group.
+
+14. Groups
+    - Group: A group for multiple sprites
+    - GroupSingle: A group with a single sprite
+
+"""
