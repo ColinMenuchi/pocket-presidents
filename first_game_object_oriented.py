@@ -46,7 +46,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Obstacle(pygame.sprite.Sprite):
-    def __init__(self, type):
+    def __init__(self, type, score_):
         super().__init__()
         
         if type == 'fly':
@@ -54,16 +54,30 @@ class Obstacle(pygame.sprite.Sprite):
             fly_frame_2 = pygame.image.load('graphics/Fly2.png')
             self.frames = [fly_frame_1, fly_frame_2]
             self.obstacle_type = 'fly'
-            self.speed_list = [6, 10, 12]
-            self.speed = choice(self.speed_list)
+            if score_ <= 25:
+                self.speed = 6
+            elif score_ <= 50:
+                self.speed = 8
+            elif score_ <= 100:
+                self.speed = 12
+            else:
+                speed_list = [6, 10, 12, 25]
+                self.speed = choice(speed_list)
             y_pos = 362
         else:
             snail_frame_1 = pygame.image.load('graphics/snail1.png').convert_alpha()
             snail_frame_2 = pygame.image.load('graphics/snail2.png').convert_alpha()
             self.frames = [snail_frame_1, snail_frame_2]
             self.obstacle_type = 'snail'
-            self.speed_list = [4, 6]
-            self.speed = choice(self.speed_list)
+            if score_ <= 25:
+                self.speed = 6
+            elif score_ <= 50:
+                self.speed = 8
+            elif score_ <= 100:
+                self.speed = 12
+            else:
+                speed_list = [6, 10, 12, 25]
+                self.speed = choice(speed_list)
             y_pos = 512
         
         self.animation_index = 0
@@ -171,7 +185,7 @@ while True:
         if game_active:
             #Checking Obstacle Spawn Updates
             if event.type == obstacle_timer:
-                obstacle_group.add(Obstacle(choice(['fly', 'snail', 'snail'])))
+                obstacle_group.add(Obstacle(choice(['fly', 'snail', 'snail']), score))
     
     if game_active:
        
