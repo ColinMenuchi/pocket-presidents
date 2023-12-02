@@ -1,5 +1,5 @@
 """
-My Personal PyGame Documentation
+My Personal Pygame Documentation
 --------------------------------
 Methods:
 --------
@@ -99,8 +99,11 @@ Methods:
      given angle and scales it by the given scale.
 
 15. pygame.time.set_timer(event, frequency) -> Takes two
-    parameters, an event and the desired frequency of the 
+    arguments, an event and the desired frequency of the 
     event in miliseconds. Then creates a timer for that event.
+
+15a. pygame.time.delay(milliseconds) -> Takes one argument: a
+     time in milliseconds. Pauses the program for that much time.
 
 16. sprite.draw(display) -> Draws the passed sprite onto the
     passed display.

@@ -1,7 +1,9 @@
 import pygame
 from president import President, BillClinton
 from button import Button
-from battle import what_will_you_do
+from move import Move
+from battle import what_will_you_do, are_you_sure, compare_speed
+import random
 from sys import exit
 
 #Initializing PyGame and Screen
@@ -14,17 +16,74 @@ clock = pygame.time.Clock()
 main_font = pygame.font.Font(None, 50)
 name_font = pygame.font.Font(None, 35)
 title_font = pygame.font.Font(None, 100)
+move_font = pygame.font.Font(None, 30)
 
 #Game States
 home_screen = False
 president_select = False
-battle = False
+battle = True
+what_do = True
+move_select = False
+confirmation = False
+attacks = False
+player_deals_damage = False
+enemy_deals_damage = False
+win = False
+lose = False
 
-#Buttons
+#Object Oriented Enemy & Player Instantiation
+enemy_president = President('enemy', 'Donald Trump')
+enemy = pygame.sprite.GroupSingle()
+enemy.add(enemy_president)
+
+player_president = President('player', 'Abraham Lincoln')
+player = pygame.sprite.GroupSingle()
+player.add(player_president)
+
+#Buttons:
+#Home Screen Start Button
 start_button_sound = pygame.mixer.Sound('audio/start_button_click.mp3')
 start_button_image = pygame.image.load('graphics/start_button1.png').convert_alpha()
 start_button_hover = pygame.image.load('graphics/start_button2.png').convert_alpha()
 start_button = Button(500, 285, start_button_image, screen, 1, start_button_sound)
+#Battle Menu Buttons
+button_audio = pygame.mixer.Sound('audio/battle_button_click.mp3') # Also used for move buttons
+presidents_button_image = pygame.image.load('graphics/button_presidents1.png').convert_alpha()
+presidents_hover_button = pygame.image.load('graphics/button_presidents2.png').convert_alpha()
+fight_button_image = pygame.image.load('graphics/button_fight1.png').convert_alpha()
+fight_hover_button = pygame.image.load('graphics/button_fight2.png').convert_alpha()
+presidents_button = Button(650, 500, presidents_button_image, screen, 1, button_audio)
+fight_button = Button(850, 500, fight_button_image, screen, 1, button_audio)
+#Move Buttons
+move1_button_image = pygame.image.load('graphics/button_move1-1.png').convert_alpha()
+move1_button_hover = pygame.image.load('graphics/button_move1-2.png').convert_alpha()
+move1_button = Button(610, 485, move1_button_image, screen, 1, button_audio)
+move1_text = move_font.render(player_president.move_list[0].name, False, 'Black')
+
+move2_button_image = pygame.image.load('graphics/button_move2-1.png').convert_alpha()
+move2_button_hover = pygame.image.load('graphics/button_move2-2.png').convert_alpha()
+move2_button = Button(810, 485, move2_button_image, screen, 1, button_audio)
+move2_text = move_font.render(player_president.move_list[1].name, False, 'Black')
+
+move3_button_image = pygame.image.load('graphics/button_move3-1.png').convert_alpha()
+move3_button_hover = pygame.image.load('graphics/button_move3-2.png').convert_alpha()
+move3_button = Button(610, 542, move3_button_image, screen, 1, button_audio)
+move3_text = move_font.render(player_president.move_list[2].name, False, 'Black')
+
+move4_button_image = pygame.image.load('graphics/button_move4-1.png').convert_alpha()
+move4_button_hover = pygame.image.load('graphics/button_move4-2.png').convert_alpha()
+move4_button = Button(810, 542, move4_button_image, screen, 1, button_audio)
+move4_text = move_font.render(player_president.move_list[3].name, False, 'Black')
+
+back_button_image = pygame.image.load('graphics/button_back1.png').convert_alpha()
+back_button_image = pygame.transform.rotozoom(back_button_image, 0, 0.6)
+back_button_hover = pygame.image.load('graphics/button_back2.png').convert_alpha()
+back_button_hover = pygame.transform.rotozoom(back_button_hover, 0, 0.6)
+back_button = Button(935, 510, back_button_image, screen, 1, button_audio)
+
+confirm_button_image = pygame.image.load('graphics/button_confirm1.png').convert_alpha()
+confirm_button_hover = pygame.image.load('graphics/button_confirm2.png').convert_alpha()
+confirm_button = Button(800, 510, confirm_button_image, screen, 1, button_audio)
 
 #Menu Screen
 menu_title = pygame.image.load('graphics/pokemon_title.png').convert_alpha()
@@ -52,23 +111,33 @@ choose_your_character = title_font.render('Choose your Character', False, 'Black
 choose_box = pygame.Rect((100, 30), (800, 75))
 
 #Battle Screen
+#Background
 battle_field = pygame.image.load('graphics/pokemon_battlefield2.webp').convert_alpha()
-
-#Object Oriented Enemy & Player Instantiation
-enemy = pygame.sprite.GroupSingle()
-enemy.add(President('enemy', 'Abraham Lincoln'))
-
-player = pygame.sprite.GroupSingle()
-player.add(President('player', 'Donald Trump'))
 
 #Player and Enemy Boxes
 enemy_box = pygame.Rect((200, 50), (325, 100))
+enemy_black_bar = pygame.Rect((213, 80), (300, 35))
 enemy_health_bar = pygame.Rect((213, 80), (300, 35))
 player_box = pygame.Rect((650, 350), (325, 100))
+player_black_bar = pygame.Rect((663, 380), (300, 35))
 player_health_bar = pygame.Rect((663, 380), (300, 35))
+#Names on Boxes
+player_name = name_font.render(player_president.name, False, 'Black')
+enemy_name = name_font.render(enemy_president.name, False, 'Black')
+#Text Card
+battle_text_box = pygame.image.load('graphics/battle_text_box.png').convert_alpha()
+battle_text_rect = battle_text_box.get_rect()
+battle_text_rect.center = (390, 505)
 
-player_name = name_font.render(player.sprites()[0].name, False, 'Black')
-enemy_name = name_font.render(enemy.sprites()[0].name, False, 'Black')
+#Trackers & Determinators
+selected_move = "" # Used to track the player's move selection during battle
+enemy_moves = enemy_president.move_list # Used to hold the enemy's moves
+enemy_selected_move = "" # Used to track the enemy's move selection during battle
+damage_to_deal = 0 # Used to determine damage in combat
+healing_to_do = 0 # Used to determine healing in combat
+count_damage = -100 # Used to track the damage done in combat
+player_is_faster = None # Used to determine who moves first
+turns_left = 2 # Used to prevent Player & Enemy from continuously damaging one anthother
 
 #Game Loop
 while True:
@@ -79,11 +148,51 @@ while True:
             pygame.quit()
             exit()
         
-        #Transition to President Select
+        #Transition from Home Screen to President Select
         if home_screen:
             if start_button.is_clicked():
                 menu_music.fadeout(1000) # Fades out music over time passed (miliseconds)
                 home_screen = False
+
+        #Battle Menu
+        if battle:
+            #Battle Phases
+            if what_do:
+                if presidents_button.is_clicked():
+                    print('Test Successful')
+                elif fight_button.is_clicked():
+                    #Booleans to Determine Battle Menu Display
+                    what_do = False
+                    move_select = True
+            elif move_select:
+                if move1_button.is_clicked():
+                    selected_move = player_president.move_list[0]
+                    move_select = False
+                    confirmation = True
+                elif move2_button.is_clicked():
+                    selected_move = player_president.move_list[1]
+                    move_select = False
+                    confirmation = True
+                elif move3_button.is_clicked():
+                    selected_move = player_president.move_list[2]
+                    move_select = False
+                    confirmation = True
+                elif move4_button.is_clicked():
+                    selected_move = player_president.move_list[3]
+                    move_select = False
+                    confirmation = True
+                elif back_button.is_clicked():
+                    selected_move = ""
+                    move_select = False
+                    what_do = True
+            elif confirmation:
+                if confirm_button.is_clicked():
+                    confirmation = False
+                    attacks = True
+                    enemy_selected_move = random.choice(enemy_moves)
+                elif back_button.is_clicked():
+                    confirmation = False
+                    move_select = True
 
     #Home Screen
     if home_screen:
@@ -116,27 +225,178 @@ while True:
         #President Heads
         screen.blit(BillClinton().head, (50, 60))
 
-
-
-
     else:
         #Places the Battlefiled & Presidents On the Screen
         screen.blit(battle_field, (0, 0))
         enemy.draw(screen)
-        enemy.update()
         player.draw(screen)
-        player.update()
+        if not win:
+            enemy.update()
+        if not lose:
+            player.update()
 
-        #Places the Boxes On the Screen
+        #Places the Boxes & Health Bars On the Screen
         pygame.draw.rect(screen, '#e1d9d1', player_box)
-        pygame.draw.rect(screen, 'Green', player_health_bar)
         pygame.draw.rect(screen, '#e1d9d1', enemy_box)
-        pygame.draw.rect(screen, 'Green', enemy_health_bar)
+        pygame.draw.rect(screen, 'Black', player_black_bar)
+        if player_health_bar.width > 150:
+            pygame.draw.rect(screen, 'Green', player_health_bar)
+        elif player_health_bar.width > 75:
+            pygame.draw.rect(screen, 'Orange', player_health_bar)
+        else:
+            pygame.draw.rect(screen, 'Red', player_health_bar)
+        pygame.draw.rect(screen, 'Black', enemy_black_bar)
+        if enemy_health_bar.width > 150:
+            pygame.draw.rect(screen, 'Green', enemy_health_bar)
+        elif enemy_health_bar.width > 75:
+            pygame.draw.rect(screen, 'Orange', enemy_health_bar)
+        else:
+            pygame.draw.rect(screen, 'Red', enemy_health_bar)
 
         screen.blit(player_name, (655, 355))
         screen.blit(enemy_name, (205, 55))
 
-        what_will_you_do(screen)
-    
+        #Battle Menu Display
+        if what_do:
+            what_will_you_do(screen)
+            presidents_button.draw(presidents_button_image, presidents_hover_button)
+            fight_button.draw(fight_button_image, fight_hover_button)
+        #Player Selects Move:
+        elif move_select:
+            what_will_you_do(screen)
+            move1_button.draw(move1_button_image, move1_button_hover)
+            screen.blit(move1_text, (535, 477))
+            move2_button.draw(move2_button_image, move2_button_hover)
+            screen.blit(move2_text, (735, 477))
+            move3_button.draw(move3_button_image, move3_button_hover)
+            screen.blit(move3_text, (535, 534))
+            move4_button.draw(move4_button_image, move4_button_hover)
+            screen.blit(move4_text, (735, 534))
+            back_button.draw(back_button_image, back_button_hover)
+        #Player Confirms Actions:
+        elif confirmation:
+            are_you_sure(screen)
+            confirm_button.draw(confirm_button_image, confirm_button_hover)
+            back_button.draw(back_button_image, back_button_hover)
+        elif attacks:
+            #Determine Who Moves First:
+            if turns_left == 2:
+                player_is_faster = compare_speed(player_president, enemy_president)
+            
+            if player_is_faster and turns_left == 2:
+            #Display Message of Move Being Used
+                battle_text1 = name_font.render(f'{player_president.name} used ', False, 'Black')
+                battle_text2 = name_font.render(f'{selected_move.name}!', False, 'Black')
+                screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
+                screen.blit(battle_text1, (170, 470))
+                screen.blit(battle_text2, (170, 490))
+
+                damage_to_deal = selected_move.power # Player will deal this damage to enemy
+
+                player_deals_damage = True # Player will now deal damage
+
+            else:
+                battle_text1 = name_font.render(f'{enemy_president.name} used ', False, 'Black')
+                battle_text2 = name_font.render(f'{enemy_selected_move.name}!', False, 'Black')
+                screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
+                screen.blit(battle_text1, (170, 470))
+                screen.blit(battle_text2, (170, 490))
+                damage_to_deal = enemy_selected_move.power # Player will deal this damage to enemy
+
+                enemy_deals_damage = True # Player will now deal damage
+
+            if player_deals_damage:
+                #Reduce Width of Enemy Health Bar According to Damage Taken
+                screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
+                screen.blit(battle_text1, (170, 470))
+                screen.blit(battle_text2, (170, 490))
+
+                #Slowly reduces Enemy Health Bar Width
+                if (count_damage < damage_to_deal) and (count_damage >= 0):
+                    enemy_health_bar.width -= 1
+                    count_damage += 1
+
+                #Provides a Buffer Before Damage Reduction
+                elif count_damage < 0:
+                    count_damage += 1
+
+                #Transition to Next Phase
+                else:
+                    #If the Enemy Dies
+                    if enemy_health_bar.width <= 0:
+                        attacks = False
+                        win = True
+
+                    #If the Enemy Survives
+                    else:
+                        damage_to_deal = 0
+                        count_damage = -100
+                        turns_left -= 1
+                        if not turns_left:
+                            turns_left = 2
+                            attacks = False
+                            player_deals_damage = False
+                            enemy_deals_damage = False
+                            what_do = True
+                        else:
+                            player_deals_damage = False
+                            enemy_deals_damage = True
+
+            elif enemy_deals_damage:
+                #Reduce Width of Player Health Bar According to Damage Taken
+                screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
+                screen.blit(battle_text1, (170, 470))
+                screen.blit(battle_text2, (170, 490))
+
+                #Slowly reduces Enemy Health Bar Width
+                if (count_damage < damage_to_deal) and (count_damage >= 0):
+                    player_health_bar.width -= 1
+                    count_damage += 1
+
+                #Provides a Buffer Before Damage Reduction
+                elif count_damage < 0:
+                    count_damage += 1
+
+                #Transition to Next Phase
+                else:
+                    #If the Player Dies
+                    if player_health_bar.width <= 0:
+                        attacks = False
+                        lose = True
+
+                    #If the Player Survives
+                    else:
+                        damage_to_deal = 0
+                        count_damage = -100
+                        turns_left -= 1
+                        if not turns_left:
+                            turns_left = 2
+                            attacks = False
+                            enemy_deals_damage = False
+                            player_deals_damage = False
+                            what_do = True
+                        else:
+                            enemy_deals_damage = False
+                            player_deals_damage = True
+
+        #Displays a Win Message
+        elif win:
+            if enemy_president.rect.y < 620:
+                enemy_president.move_down()
+
+            battle_text1 = name_font.render('Congradulations! You Won!', False, 'Black')
+            screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
+            screen.blit(battle_text1, (170, 470))
+        
+        #Diplays a Loss Message
+        elif lose:
+            if player_president.rect.y < 620:
+                player_president.move_down()
+
+            battle_text1 = name_font.render('Unfortunate. You Lost.', False, 'Black')
+            screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
+            screen.blit(battle_text1, (170, 470))
+
+ 
     pygame.display.update()
     clock.tick(60)
