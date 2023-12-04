@@ -2,7 +2,7 @@ import pygame
 from president import President, BillClinton
 from button import Button
 from move import Move
-from battle import what_will_you_do, are_you_sure, compare_speed
+from battle import what_will_you_do, are_you_sure, compare_speed, calculate_dmg, calculate_heals
 import random
 from sys import exit
 
@@ -11,6 +11,15 @@ pygame.init()
 screen = pygame.display.set_mode((1000, 570))
 pygame.display.set_caption('Pocket Presidents')
 clock = pygame.time.Clock()
+
+BATTLE_MUSIC = [pygame.mixer.Sound('audio/Battle-Chairman_Rose.flac'),
+                pygame.mixer.Sound('audio/Battle-Marnie.flac'),
+                pygame.mixer.Sound('audio/B&W-Battle_Gym_Leader.mp3'),
+                pygame.mixer.Sound('audio/B&W-Battle_Wild.mp3'),
+                pygame.mixer.Sound('audio/B&W-Battle_Team_Plasma.mp3')]
+
+VICTORY_MUSIC = [pygame.mixer.Sound('audio/Marnie-Victory.flac'),
+                 pygame.mixer.Sound('audio/B&W-Team_Plasma_Victory.mp3')]
 
 #Fonts
 main_font = pygame.font.Font(None, 50)
@@ -32,11 +41,11 @@ win = False
 lose = False
 
 #Object Oriented Enemy & Player Instantiation
-enemy_president = President('enemy', 'Donald Trump')
+enemy_president = President('enemy', 'Abraham Lincoln')
 enemy = pygame.sprite.GroupSingle()
 enemy.add(enemy_president)
 
-player_president = President('player', 'Abraham Lincoln')
+player_president = President('player', 'Donald Trump')
 player = pygame.sprite.GroupSingle()
 player.add(player_president)
 
@@ -104,7 +113,6 @@ ampersand = pygame.transform.rotozoom(ampersand, 0, 0.09)
 ampersand_rect = ampersand.get_rect(center = (500, 430))
 
 menu_music = pygame.mixer.Sound('audio/menu_song.mp3')
-first_iteration = True # Needed to play the music just once.
 
 #President Select Screen
 choose_your_character = title_font.render('Choose your Character', False, 'Black')
@@ -124,10 +132,16 @@ player_health_bar = pygame.Rect((663, 380), (300, 35))
 #Names on Boxes
 player_name = name_font.render(player_president.name, False, 'Black')
 enemy_name = name_font.render(enemy_president.name, False, 'Black')
+#Health on Boxes
+player_health_card = name_font.render(f'HP: {player_president.health}/{player_president.max_health}', False, 'Black')
+enemy_health_card = name_font.render(f'HP: {enemy_president.health}/{enemy_president.max_health}', False, 'Black')
 #Text Card
 battle_text_box = pygame.image.load('graphics/battle_text_box.png').convert_alpha()
 battle_text_rect = battle_text_box.get_rect()
 battle_text_rect.center = (390, 505)
+
+#Music
+battle_music = None # To be chosen randomly later
 
 #Trackers & Determinators
 selected_move = "" # Used to track the player's move selection during battle
@@ -135,9 +149,18 @@ enemy_moves = enemy_president.move_list # Used to hold the enemy's moves
 enemy_selected_move = "" # Used to track the enemy's move selection during battle
 damage_to_deal = 0 # Used to determine damage in combat
 healing_to_do = 0 # Used to determine healing in combat
-count_damage = -100 # Used to track the damage done in combat
+count_damage_health = -100 # Used to track the damage or healing done in combat
+count_president_health = 0 # Used to increment/decrement health on name card
 player_is_faster = None # Used to determine who moves first
 turns_left = 2 # Used to prevent Player & Enemy from continuously damaging one anthother
+can_calc_speed = True # Used so speed is only calculated once in battle
+turn_can_change = True # Used to properly swap turns in battle
+can_calc_dmg_heals = True # Used to only calculate damage and heals once each turn
+first_iteration = True # Needed so music won't loop over itself.
+player_move_is_status_move = False # Used to determine if a player move affects stats rather than health
+enemy_move_is_status_move = False # Used to determine if an enemy move affects stats rather than health
+can_change_stats = True # Used to only change a president's stats once
+
 
 #Game Loop
 while True:
@@ -152,10 +175,17 @@ while True:
         if home_screen:
             if start_button.is_clicked():
                 menu_music.fadeout(1000) # Fades out music over time passed (miliseconds)
+                first_iteration = True
+                battle = True
                 home_screen = False
 
         #Battle Menu
         if battle:
+            #Pick Music
+            if first_iteration:
+                battle_music = random.choice(BATTLE_MUSIC)
+                battle_music.play()
+                first_iteration = False
             #Battle Phases
             if what_do:
                 if presidents_button.is_clicked():
@@ -201,7 +231,7 @@ while True:
         screen.blit(menu_title, menu_title_rect)
         #Plays Music Once
         if first_iteration:
-            menu_music.play(loops = -1)
+            menu_music.play(loops=-1)
             first_iteration = False
         #"Pokemon" Animation
         if menu_title_rect.y > 25:
@@ -226,6 +256,7 @@ while True:
         screen.blit(BillClinton().head, (50, 60))
 
     else:
+
         #Places the Battlefiled & Presidents On the Screen
         screen.blit(battle_field, (0, 0))
         enemy.draw(screen)
@@ -252,9 +283,14 @@ while True:
             pygame.draw.rect(screen, 'Orange', enemy_health_bar)
         else:
             pygame.draw.rect(screen, 'Red', enemy_health_bar)
-
+        #Changes President Cards Acoording to Health
+        player_health_card = name_font.render(f'HP: {int(player_president.health)}/{player_president.max_health}', False, 'Black')
+        enemy_health_card = name_font.render(f'HP: {int(enemy_president.health)}/{enemy_president.max_health}', False, 'Black')
+        #Blit President Cards
         screen.blit(player_name, (655, 355))
+        screen.blit(player_health_card, (655, 420))
         screen.blit(enemy_name, (205, 55))
+        screen.blit(enemy_health_card, (205, 120))
 
         #Battle Menu Display
         if what_do:
@@ -280,28 +316,51 @@ while True:
             back_button.draw(back_button_image, back_button_hover)
         elif attacks:
             #Determine Who Moves First:
-            if turns_left == 2:
+            if turns_left == 2 and can_calc_speed:
                 player_is_faster = compare_speed(player_president, enemy_president)
+                can_calc_speed = False
+            elif turns_left == 1 and turn_can_change:
+                player_is_faster = not player_is_faster
+                turn_can_change = False
             
-            if player_is_faster and turns_left == 2:
+            if player_is_faster:
             #Display Message of Move Being Used
-                battle_text1 = name_font.render(f'{player_president.name} used ', False, 'Black')
-                battle_text2 = name_font.render(f'{selected_move.name}!', False, 'Black')
+                if not player_move_is_status_move or count_damage_health < 0: # If move isn't status or provide a time buffer if it is
+                    battle_text1 = name_font.render(f'{player_president.name} used ', False, 'Black')
+                    battle_text2 = name_font.render(f'{selected_move.name}!', False, 'Black')
                 screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
                 screen.blit(battle_text1, (170, 470))
                 screen.blit(battle_text2, (170, 490))
 
-                damage_to_deal = selected_move.power # Player will deal this damage to enemy
+                #Check if move is a status move
+                if selected_move.stat_change: # Stat Change is None if nonexistant
+                    player_move_is_status_move = True
+
+                #Calculate Damage Once
+                if can_calc_dmg_heals:
+                    damage_to_deal = calculate_dmg(selected_move, player_president, enemy_president) # Player will deal this damage to enemy
+                    healing_to_do = calculate_heals(selected_move, player_president) # Player will heal this much health
+                    can_calc_dmg_heals = False
 
                 player_deals_damage = True # Player will now deal damage
 
             else:
-                battle_text1 = name_font.render(f'{enemy_president.name} used ', False, 'Black')
-                battle_text2 = name_font.render(f'{enemy_selected_move.name}!', False, 'Black')
+                if not enemy_move_is_status_move or count_damage_health < 0:
+                    battle_text1 = name_font.render(f'The opposing {enemy_president.name}', False, 'Black')
+                    battle_text2 = name_font.render(f'used {enemy_selected_move.name}!', False, 'Black')
                 screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
                 screen.blit(battle_text1, (170, 470))
                 screen.blit(battle_text2, (170, 490))
-                damage_to_deal = enemy_selected_move.power # Player will deal this damage to enemy
+
+                #Check if move is a status move
+                if enemy_selected_move.stat_change: # Stat Change is None if nonexistant
+                    enemy_move_is_status_move = True
+
+                #Calculate Damage Once
+                if can_calc_dmg_heals:
+                    damage_to_deal = calculate_dmg(enemy_selected_move, enemy_president, player_president) # Enemy will deal this damage to player
+                    healing_to_do = calculate_heals(enemy_selected_move, enemy_president) # Player will heal this much health
+                    can_calc_dmg_heals = False
 
                 enemy_deals_damage = True # Player will now deal damage
 
@@ -311,32 +370,92 @@ while True:
                 screen.blit(battle_text1, (170, 470))
                 screen.blit(battle_text2, (170, 490))
 
+                #Determine what stat to change if move effects status
+                if player_move_is_status_move and count_damage_health < 100:
+                    count_damage_health += 1
+                    if count_damage_health >= 0:
+                        if selected_move.stat_change == 'Attack Up':
+                            battle_text1 = name_font.render(f"{player_president.name}'s attack", False, 'Black')
+                            battle_text2 = name_font.render('increased!', False, 'Black')
+                            if can_change_stats:
+                                player_president.attack *= 1.5
+                                can_change_stats = False
+                        elif selected_move.stat_change == 'Defense Up':
+                            battle_text1 = name_font.render(f"{player_president.name}'s defense", False, 'Black')
+                            battle_text2 = name_font.render('increased!', False, 'Black')
+                            if can_change_stats:
+                                player_president.defense *= 1.5
+                                can_change_stats = False
+                        elif selected_move.stat_change == 'Speed Up':
+                            battle_text1 = name_font.render(f"{player_president.name}'s speed", False, 'Black')
+                            battle_text2 = name_font.render('increased!', False, 'Black')
+                            if can_change_stats:
+                                player_president.speed *= 1.5
+                                can_change_stats = False
+                        elif selected_move.stat_change == 'Attack Down':
+                            battle_text1 = name_font.render(f"The opposing {enemy_president.name}'s", False, 'Black')
+                            battle_text2 = name_font.render('attack decreased!', False, 'Black')
+                            if can_change_stats:
+                                enemy_president.attack = enemy_president.attack * (2 / 3)
+                                can_change_stats = False
+                        elif selected_move.stat_change == 'Defense Down':
+                            battle_text1 = name_font.render(f"The opposing {enemy_president.name}'s", False, 'Black')
+                            battle_text2 = name_font.render('defense decreased!', False, 'Black')
+                            if can_change_stats:
+                                enemy_president.defense = enemy_president.defense * (2 / 3)
+                                can_change_stats = False
+                        elif selected_move.stat_change == 'Speed Down':
+                            battle_text1 = name_font.render(f"The opposing {enemy_president.name}'s", False, 'Black')
+                            battle_text2 = name_font.render('speed decreased!', False, 'Black')
+                            if can_change_stats:
+                                enemy_president.speed = enemy_president.speed * (2 / 3)
+                                can_change_stats = False
+                        
+                #Damage or Healing Move
                 #Slowly reduces Enemy Health Bar Width
-                if (count_damage < damage_to_deal) and (count_damage >= 0):
-                    enemy_health_bar.width -= 1
-                    count_damage += 1
+                elif (count_damage_health < damage_to_deal) and (count_damage_health >= 0) and (healing_to_do == 0):
+                    if count_damage_health < damage_to_deal:
+                        enemy_health_bar.width -= enemy_president.damage_healing_multiplier
+                        if  enemy_president.health > 0:
+                            enemy_president.health -= 1
+                        count_damage_health += 1
 
-                #Provides a Buffer Before Damage Reduction
-                elif count_damage < 0:
-                    count_damage += 1
+                #Slowly increases Player Health Bar Width
+                elif (count_damage_health < healing_to_do) and (count_damage_health >= 0):
+                        if player_health_bar.width < 300:
+                            player_health_bar.width += player_president.damage_healing_multiplier
+                            if player_president.health < player_president.max_health:
+                                player_president.health += 1
+                        count_damage_health += 1
+
+                #Provides a Buffer Before Damage or Stat Change
+                elif count_damage_health < 0:
+                    count_damage_health += 1
 
                 #Transition to Next Phase
                 else:
                     #If the Enemy Dies
                     if enemy_health_bar.width <= 0:
                         attacks = False
+                        first_iteration = True
                         win = True
 
                     #If the Enemy Survives
                     else:
                         damage_to_deal = 0
-                        count_damage = -100
+                        count_damage_health = -100
                         turns_left -= 1
+                        can_calc_dmg_heals = True
+                        can_change_stats = True
+                        player_move_is_status_move = False
                         if not turns_left:
                             turns_left = 2
                             attacks = False
                             player_deals_damage = False
                             enemy_deals_damage = False
+                            can_calc_speed = True
+                            turn_can_change = True
+                            can_calc_dmg_heals = True
                             what_do = True
                         else:
                             player_deals_damage = False
@@ -348,14 +467,69 @@ while True:
                 screen.blit(battle_text1, (170, 470))
                 screen.blit(battle_text2, (170, 490))
 
-                #Slowly reduces Enemy Health Bar Width
-                if (count_damage < damage_to_deal) and (count_damage >= 0):
-                    player_health_bar.width -= 1
-                    count_damage += 1
+                #Determine what stat to change if move effects status
+                if enemy_move_is_status_move and count_damage_health < 100:
+                    print('test 1')
+                    count_damage_health += 1
+                    print(count_damage_health)
+                    if count_damage_health >= 0:
+                        print('test 2')
+                        if enemy_selected_move.stat_change == 'Attack Up':
+                            print('test 3')
+                            battle_text1 = name_font.render(f"The opposing {enemy_president.name}'s", False, 'Black')
+                            battle_text2 = name_font.render('attack increased!', False, 'Black')
+                            if can_change_stats:
+                                enemy_president.attack *= 1.5
+                                can_change_stats = False
+                        elif enemy_selected_move.stat_change == 'Defense Up':
+                            battle_text1 = name_font.render(f"The opposing {enemy_president.name}'s", False, 'Black')
+                            battle_text2 = name_font.render('defense increased!', False, 'Black')
+                            if can_change_stats:
+                                enemy_president.defense *= 1.5
+                                can_change_stats = False
+                        elif enemy_selected_move.stat_change == 'Speed Up':
+                            battle_text1 = name_font.render(f"The opposing {enemy_president.name}'s", False, 'Black')
+                            battle_text2 = name_font.render('speed increased!', False, 'Black')
+                            if can_change_stats:
+                                enemy_president.speed *= 1.5
+                                can_change_stats = False
+                        elif enemy_selected_move.stat_change == 'Attack Down':
+                            battle_text1 = name_font.render(f"{player_president.name}'s attack", False, 'Black')
+                            battle_text2 = name_font.render('decreased!', False, 'Black')
+                            if can_change_stats:
+                                player_president.attack = player_president.attack * (2 / 3)
+                                can_change_stats = False
+                        elif enemy_selected_move.stat_change == 'Defense Down':
+                            battle_text1 = name_font.render(f"{player_president.name}'s defense", False, 'Black')
+                            battle_text2 = name_font.render('decreased!', False, 'Black')
+                            if can_change_stats:
+                                player_president.defense = player_president.defense * (2 / 3)
+                                can_change_stats = False
+                        elif enemy_selected_move.stat_change == 'Speed Down':
+                            battle_text1 = name_font.render(f"{player_president.name}'s speed", False, 'Black')
+                            battle_text2 = name_font.render('decreased!', False, 'Black')
+                            if can_change_stats:
+                                player_president.speed = player_president.speed * (2 / 3)
+                                can_change_stats = False
+
+                #Slowly reduces Player Health Bar Width
+                elif (count_damage_health < damage_to_deal) and (count_damage_health >= 0) and (healing_to_do == 0):
+                    player_health_bar.width -= player_president.damage_healing_multiplier
+                    if player_president.health > 0:
+                        player_president.health -= 1 # Changes player health on card
+                    count_damage_health += 1
+
+                #Slowly increases Enemy Health Bar Width
+                elif (count_damage_health < healing_to_do) and (count_damage_health >= 0):
+                    if enemy_health_bar.width < 300:
+                        enemy_health_bar.width += enemy_president.damage_healing_multiplier
+                        if enemy_president.health < enemy_president.max_health:
+                            enemy_president.health += 1 # Changes enemy health on card
+                    count_damage_health += 1
 
                 #Provides a Buffer Before Damage Reduction
-                elif count_damage < 0:
-                    count_damage += 1
+                elif count_damage_health < 0:
+                    count_damage_health += 1
 
                 #Transition to Next Phase
                 else:
@@ -367,13 +541,19 @@ while True:
                     #If the Player Survives
                     else:
                         damage_to_deal = 0
-                        count_damage = -100
+                        count_damage_health = -100
                         turns_left -= 1
+                        can_calc_dmg_heals = True
+                        can_change_stats = True
+                        enemy_move_is_status_move = False
                         if not turns_left:
                             turns_left = 2
                             attacks = False
                             enemy_deals_damage = False
                             player_deals_damage = False
+                            can_calc_speed = True
+                            turn_can_change = True
+                            can_calc_dmg_heals = True
                             what_do = True
                         else:
                             enemy_deals_damage = False
@@ -381,12 +561,18 @@ while True:
 
         #Displays a Win Message
         elif win:
+            if first_iteration:
+                battle_music.stop()
+                random.choice(VICTORY_MUSIC).play()
+                first_iteration = False
             if enemy_president.rect.y < 620:
                 enemy_president.move_down()
 
             battle_text1 = name_font.render('Congradulations! You Won!', False, 'Black')
             screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
             screen.blit(battle_text1, (170, 470))
+            player_president.stat_reset()
+            enemy_president.stat_reset()
         
         #Diplays a Loss Message
         elif lose:
@@ -396,6 +582,8 @@ while True:
             battle_text1 = name_font.render('Unfortunate. You Lost.', False, 'Black')
             screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
             screen.blit(battle_text1, (170, 470))
+            player_president.stat_reset()
+            enemy_president.stat_reset()
 
  
     pygame.display.update()

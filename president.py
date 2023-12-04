@@ -10,21 +10,35 @@ class President(pygame.sprite.Sprite):
         self.idle = []
         self.move_list = []
         self.animation_index = 0
+        self.health = 0
+        self.max_health = 0
+        self.damage_healing_multiplier = 0 # Allows for dynamic health bars
+        self.attack = 0
+        self.defense = 0
+        self.speed = 0
         #Presidential Sprite Creation
         #Determines Team
         if self.team == 'player':
             #Picks From Player Presidential Sprites
             match self.name:
                 case 'Abraham Lincoln':
-                    self.speed = 75
+                    self.health = 100
+                    self.max_health = 100
+                    self.attack = 37.5
+                    self.defense = 37.5
+                    self.speed = 37.5
                     self.idle = AbrahamLincoln('player').idle
-                    self.move_list = [Move('Emancipate', 0, 100), Move('Four Score', 80, 0),
-                                      Move('Divided House', 100, 0), Move('For The Union', 0, 0)]
+                    self.move_list = [Move('Emancipate', 0, 33, None), Move('Four Score', 20, 0, None),
+                                      Move('Divided House', 25, 0, None), Move('For The Union', 0, 0, 'Attack Up')]
                 case 'Donald Trump':
-                    self.speed = 25
+                    self.health = 150
+                    self.max_health = 150
+                    self.attack = 20
+                    self.defense = 50
+                    self.speed = 12.5
                     self.idle = DonaldTrump('player').idle
-                    self.move_list = [Move("You're Fired", 80, 0), Move('Build Wall', 0, 0),
-                                      Move('Fake News', 120, 0), Move('Tremendous', 0, 150)]
+                    self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
+                                      Move('Fake News', 30, 0, None), Move('Tremendous', 0, 50, None)]
 
                 case 'Joe Biden':
                     joe_biden_idle1 = pygame.image.load('graphics/joe_biden1.png').convert_alpha
@@ -54,16 +68,24 @@ class President(pygame.sprite.Sprite):
                     self.idle = [clinton_idle1, clinton_idle2, clinton_idle3, clinton_idle2]
 
                 case 'Donald Trump':
-                    self.speed = 25
+                    self.health = 150
+                    self.max_health = 150
+                    self.attack = 20
+                    self.defense = 50
+                    self.speed = 12.5
                     self.idle = DonaldTrump('enemy').idle
-                    self.move_list = [Move("You're Fired", 80, 0), Move('Build Wall', 0, 0),
-                                      Move('Fake News', 120, 0), Move('Tremendous', 0, 150)]
+                    self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
+                                      Move('Fake News', 30, 0, None), Move('Tremendous', 0, 50, None)]
                     
                 case 'Abraham Lincoln':
-                    self.speed = 75
+                    self.health = 100
+                    self.max_health = 100
+                    self.attack = 37.5
+                    self.defense = 37.5
+                    self.speed = 37.5
                     self.idle = AbrahamLincoln('enemy').idle
-                    self.move_list = [Move('Emancipate', 0, 100), Move('Four Score', 80, 0),
-                                      Move('Divided House', 100, 0), Move('For The Union', 0, 0)]
+                    self.move_list = [Move('Emancipate', 0, 33, None), Move('Four Score', 20, 0, None),
+                                      Move('Divided House', 25, 0, None), Move('For The Union', 0, 0, 'Attack Up')]
                     
             self.image = self.idle[self.animation_index]
             self.screen_coords = (630, 90)
@@ -72,6 +94,9 @@ class President(pygame.sprite.Sprite):
         
         else:
             print('Invalid Team')
+        
+        self.damage_healing_multiplier = 300 / self.health
+        self.base_stats = [self.health, self.attack, self.defense, self.speed]
 
 
     def animation_state(self):
@@ -88,6 +113,14 @@ class President(pygame.sprite.Sprite):
 
     def animation_unpause(self):
         self.animation_index = 0.085
+
+    def stat_reset(self):
+        self.attack = self.base_stats[1]
+        self.defense = self.base_stats[2]
+        self.speed = self.base_stats[3]
+
+    def health_reset(self):
+        self.health = self.base_stats[0]
 
     def move_left(self):
         self.rect.x -= 5

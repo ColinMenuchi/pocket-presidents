@@ -1,6 +1,7 @@
 import pygame
 from president import President
 from button import Button
+from move import Move
 from random import randint
 
 def what_will_you_do(battle_screen):
@@ -19,35 +20,23 @@ def are_you_sure(battle_screen):
     are_sure_rect.center = (545, 400)
     screen.blit(are_sure, (are_sure_rect.x, are_sure_rect.y))
 
-"""def first_attack(battle_screen, passed_font, player_character, enemy_character, move):
-    screen = battle_screen
-    battle_text_box = pygame.image.load('graphics/battle_text_box.png').convert_alpha()
-    battle_text_rect = battle_text_box.get_rect()
-    battle_text_rect.center = (390, 505)
-    text_font = passed_font
-
-    player = player_character
-    player_name = player.sprites()[0].name
-    enemy = enemy_character
-    enemy_name = enemy.sprites()[0].name
-    selected_move = move
-
-    attack_text1 = text_font.render(f'{player_name} used ', False, 'Black')
-    attack_text2 = text_font.render(f'{selected_move.name}!', False, 'Black')
-
-    screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
-    screen.blit(attack_text1, (170, 470))
-    screen.blit(attack_text2, (170, 490))
-
-    return selected_move.power"""
-
-def compare_speed(player, enemy): #Takes two presidents as arguments, returning True if the first has a higher speed
+def compare_speed(player, enemy): # Takes two presidents as arguments, returning True if the first has a higher speed
     if player.speed > enemy.speed:
         return True
     elif player.speed < enemy.speed:
         return False
     else:
         return randint(0, 1)
+    
+def calculate_dmg(move, attacker, defender): # Takes two presidents as arguments, returns damage 1st does to 2nd
+    damage = int((move.power * (attacker.attack / defender.defense)) * defender.damage_healing_multiplier)
+    if damage != 0:
+        damage += randint(-10, 5)
+    return damage
+
+def calculate_heals(move, attacker): # Takes one president as an argument, returns amount it heals by
+    healing = int(move.healing)
+    return healing
 
     # do a damage sequence
     # start the next turn
