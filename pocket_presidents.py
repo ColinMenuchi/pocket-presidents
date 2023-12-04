@@ -469,13 +469,9 @@ while True:
 
                 #Determine what stat to change if move effects status
                 if enemy_move_is_status_move and count_damage_health < 100:
-                    print('test 1')
                     count_damage_health += 1
-                    print(count_damage_health)
                     if count_damage_health >= 0:
-                        print('test 2')
                         if enemy_selected_move.stat_change == 'Attack Up':
-                            print('test 3')
                             battle_text1 = name_font.render(f"The opposing {enemy_president.name}'s", False, 'Black')
                             battle_text2 = name_font.render('attack increased!', False, 'Black')
                             if can_change_stats:
