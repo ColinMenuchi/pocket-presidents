@@ -30,8 +30,10 @@ def compare_speed(player, enemy): # Takes two presidents as arguments, returning
     
 def calculate_dmg(move, attacker, defender): # Takes two presidents as arguments, returns damage 1st does to 2nd
     damage = int((move.power * (attacker.attack / defender.defense)) * defender.damage_healing_multiplier)
-    if damage != 0:
+    if damage > 0:
         damage += randint(-10, 5)
+    if damage <= 0 and move.healing == 0:
+        damage = 1
     return damage
 
 def calculate_heals(move, attacker): # Takes one president as an argument, returns amount it heals by

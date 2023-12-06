@@ -16,6 +16,7 @@ class President(pygame.sprite.Sprite):
         self.attack = 0
         self.defense = 0
         self.speed = 0
+        self.is_selected = False
         #Presidential Sprite Creation
         #Determines Team
         if self.team == 'player':
@@ -38,10 +39,19 @@ class President(pygame.sprite.Sprite):
                     self.speed = 12.5
                     self.idle = DonaldTrump('player').idle
                     self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
-                                      Move('Fake News', 30, 0, None), Move('Tremendous', 0, 50, None)]
+                                      Move('Fake News', 0, 0, 'Attack Up'), Move('Tremendous', 0, 50, None)]
 
                 case 'Joe Biden':
                     joe_biden_idle1 = pygame.image.load('graphics/joe_biden1.png').convert_alpha
+                case 'George Washington':
+                    self.health = 75
+                    self.max_health = 75
+                    self.attack = 50
+                    self.defense = 40
+                    self.speed = 60
+                    self.idle = GeorgeWashington('player').idle
+                    self.move_list = [Move('Cross the Delaware', 0, 0, 'Attack Up'), Move('Tar and Feather', 0, 0, 'Speed Down'),
+                                      Move('Valley Forge', 0, 25, None), Move('Revolutionary Onslaught', 30, 0, None)]
                 case _:
                     print('Invalid Name')
             
@@ -75,7 +85,7 @@ class President(pygame.sprite.Sprite):
                     self.speed = 12.5
                     self.idle = DonaldTrump('enemy').idle
                     self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
-                                      Move('Fake News', 30, 0, None), Move('Tremendous', 0, 50, None)]
+                                      Move('Fake News', 0, 0, 'Attack Up'), Move('Tremendous', 0, 50, None)]
                     
                 case 'Abraham Lincoln':
                     self.health = 100
@@ -86,6 +96,16 @@ class President(pygame.sprite.Sprite):
                     self.idle = AbrahamLincoln('enemy').idle
                     self.move_list = [Move('Emancipate', 0, 33, None), Move('Four Score', 20, 0, None),
                                       Move('Divided House', 25, 0, None), Move('For The Union', 0, 0, 'Attack Up')]
+                    
+                case 'George Washington':
+                    self.health = 75
+                    self.max_health = 75
+                    self.attack = 50
+                    self.defense = 40
+                    self.speed = 60
+                    self.idle = GeorgeWashington('enemy').idle
+                    self.move_list = [Move('Cross the Delaware', 0, 0, 'Attack Up'), Move('Tar and Feather', 0, 0, 'Speed Down'),
+                                      Move('Valley Forge', 0, 25, None), Move('Revolutionary Onslaught', 30, 0, None)]
                     
             self.image = self.idle[self.animation_index]
             self.screen_coords = (630, 90)
@@ -139,6 +159,8 @@ class President(pygame.sprite.Sprite):
 
 class AbrahamLincoln():
     def __init__(self, lincolns_team):
+        self.selection_image = lincoln_idle3 = pygame.image.load('graphics/enemy_lincoln3.png').convert_alpha()
+        self.selection_image = pygame.transform.rotozoom(self.selection_image, 0, 1.3)
         if lincolns_team == 'enemy':
             lincoln_idle1 = pygame.image.load('graphics/enemy_lincoln1.png').convert_alpha()
             lincoln_idle2 = pygame.image.load('graphics/enemy_lincoln2.png').convert_alpha()
@@ -175,6 +197,8 @@ class BillClinton():
 
 class DonaldTrump():
     def __init__(self, trumps_team):
+        self.selection_image = trump_idle1 = pygame.image.load('graphics/enemy_trump1.png').convert_alpha()
+        self.selection_image = pygame.transform.rotozoom(self.selection_image, 0, 1.3)
         if trumps_team == 'enemy':
             trump_idle1 = pygame.image.load('graphics/enemy_trump1.png').convert_alpha()
             trump_idle2 = pygame.image.load('graphics/enemy_trump2.png').convert_alpha()
@@ -196,3 +220,50 @@ class DonaldTrump():
             
             self.idle = [trump_idle1, trump_idle2, trump_idle3, trump_idle2, 
                          trump_idle3, trump_idle1, trump_idle1, trump_idle1]
+            
+class GeorgeWashington():
+    def __init__(self, washingtons_team):
+        self.selection_image = pygame.image.load('graphics/enemy_washington8.png').convert_alpha()
+        self.selection_image = pygame.transform.rotozoom(self.selection_image, 0, 1.3)
+        if washingtons_team == 'enemy':
+            washington_idle1 = pygame.image.load('graphics/enemy_washington1.png').convert_alpha()
+            washington_idle2 = pygame.image.load('graphics/enemy_washington2.png').convert_alpha()
+            washington_idle3 = pygame.image.load('graphics/enemy_washington3.png').convert_alpha()
+            washington_idle4 = pygame.image.load('graphics/enemy_washington4.png').convert_alpha()
+            washington_idle5 = pygame.image.load('graphics/enemy_washington5.png').convert_alpha()
+            washington_idle6 = pygame.image.load('graphics/enemy_washington6.png').convert_alpha()
+            washington_idle7 = pygame.image.load('graphics/enemy_washington7.png').convert_alpha()
+            washington_idle8 = pygame.image.load('graphics/enemy_washington8.png').convert_alpha()
+            washington_idle9 = pygame.image.load('graphics/enemy_washington9.png').convert_alpha()
+            
+            self.idle = [washington_idle1, washington_idle2, washington_idle3, washington_idle2,
+                         washington_idle1, washington_idle4, washington_idle5, washington_idle6,
+                         washington_idle7, washington_idle8, washington_idle8, washington_idle9,
+                         washington_idle9, washington_idle7, washington_idle6, washington_idle5,
+                         washington_idle4, washington_idle1]
+            
+        elif washingtons_team == 'player':
+            washington_idle1 = pygame.image.load('graphics/player_washington1.png').convert_alpha()
+            washington_idle1 = pygame.transform.rotozoom(washington_idle1, 0, 2)
+            washington_idle2 = pygame.image.load('graphics/player_washington2.png').convert_alpha()
+            washington_idle2 = pygame.transform.rotozoom(washington_idle2, 0, 2)
+            washington_idle3 = pygame.image.load('graphics/player_washington3.png').convert_alpha()
+            washington_idle3 = pygame.transform.rotozoom(washington_idle3, 0, 2)
+            washington_idle4 = pygame.image.load('graphics/player_washington4.png').convert_alpha()
+            washington_idle4 = pygame.transform.rotozoom(washington_idle4, 0, 2)
+            washington_idle5 = pygame.image.load('graphics/player_washington5.png').convert_alpha()
+            washington_idle5 = pygame.transform.rotozoom(washington_idle5, 0, 2)
+            washington_idle6 = pygame.image.load('graphics/player_washington6.png').convert_alpha()
+            washington_idle6 = pygame.transform.rotozoom(washington_idle6, 0, 2)
+            washington_idle7 = pygame.image.load('graphics/player_washington7.png').convert_alpha()
+            washington_idle7 = pygame.transform.rotozoom(washington_idle7, 0, 2)
+            washington_idle8 = pygame.image.load('graphics/player_washington8.png').convert_alpha()
+            washington_idle8 = pygame.transform.rotozoom(washington_idle8, 0, 2)
+            washington_idle9 = pygame.image.load('graphics/player_washington9.png').convert_alpha()
+            washington_idle9 = pygame.transform.rotozoom(washington_idle9, 0, 2)
+
+            self.idle = [washington_idle1, washington_idle2, washington_idle3, washington_idle2,
+                         washington_idle1, washington_idle4, washington_idle5, washington_idle6,
+                         washington_idle7, washington_idle8, washington_idle8, washington_idle9,
+                         washington_idle9, washington_idle7, washington_idle6, washington_idle5,
+                         washington_idle4, washington_idle1]
