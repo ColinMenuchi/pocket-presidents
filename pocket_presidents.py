@@ -1,76 +1,70 @@
 """
-Reminder to Write a Proper Docstring
+Game Developed By Colin Menuchi
+cmenuchi@uvm.edu
+Project For CS1210-A
+Pocket Presidents / Pokemon Left & Right
+Pocket Presidents is a turn based game based off of the popular website
+Pokemon Showdown. Build a team of presidents and see if you can defend
+the constitution better than your opponent. Or don't. Not all presidents
+were known for that *wink* *wink* *nudge* nudge*.
 """
 import pygame
-from president import President, GeorgeWashington, AbrahamLincoln, DonaldTrump
+from president import President, GeorgeWashington, AbrahamLincoln, BillClinton, Obama, DonaldTrump, JoeBiden
 from button import Button
 from move import Move
 from battle import what_will_you_do, are_you_sure, compare_speed, calculate_dmg, calculate_heals
 import random
 from sys import exit
 
-#Initializing PyGame and Screen
+
+def refill_enemy_choices(enemy_team_, enemy_choices_):
+    for president in enemy_team_:
+        enemy_choices_.append(president)
+
+
+#Initializing Pygame and Game Screen
 pygame.init()
 screen = pygame.display.set_mode((1000, 570))
 pygame.display.set_caption('Pocket Presidents')
 clock = pygame.time.Clock()
 
-
-BATTLE_MUSIC = [pygame.mixer.Sound('audio/Battle-Chairman_Rose.flac'),
-                pygame.mixer.Sound('audio/Battle-Marnie.flac'),
-                pygame.mixer.Sound('audio/B&W-Battle_Gym_Leader.mp3'),
-                pygame.mixer.Sound('audio/B&W-Battle_Wild.mp3'),
-                pygame.mixer.Sound('audio/B&W-Battle_Team_Plasma.mp3')]
-
-VICTORY_MUSIC = [pygame.mixer.Sound('audio/Marnie-Victory.flac'),
-                 pygame.mixer.Sound('audio/B&W-Team_Plasma_Victory.mp3')]
-
-#Fonts
+#Creating the Fonts Used for Displaying Text in Game
 main_font = pygame.font.Font(None, 50)
 name_font = pygame.font.Font(None, 35)
-small_name_font = pygame.font.Font(None, 25)
 title_font = pygame.font.Font(None, 100)
 move_font = pygame.font.Font(None, 30)
 
-#Game States
-home_screen = True
-president_select = False
-globalbattle = False
-what_do = True
-swap = False
-fight = False
-confirmation = False
-attacks = False
-player_deals_damage = False
-enemy_deals_damage = False
-next_player_president = False
-next_enemy_president = False
-win = False
-lose = False
-
-#Object Oriented Enemy Instantiation
+#Instantiate Enemy and Enemy Sprites
 enemy_choices = [President('enemy', 'George Washington'),
               President('enemy', 'Abraham Lincoln'),
-              President('enemy', 'Donald Trump')]
+              President('enemy', 'Bill Clinton'),
+              President('enemy', 'Obama'),
+              President('enemy', 'Donald Trump'),
+              President('enemy', 'Joe Biden')] # List that holds presidents the opponent can pick from
 
 enemy_team = [] # Will hold the presidents on the enemy's team
-enemy_president = enemy_choices.pop(random.randint(0, 2)) # Used as the enemy character in calculations
+enemy_president = enemy_choices.pop(random.randint(0, 5)) # enemy_president resident is used to represent the enemy character in calculations.
 
-enemy_team.append(enemy_choices.pop(random.randint(0, 1)))
-enemy_team.append(enemy_choices.pop(0))
+enemy_team.append(enemy_choices.pop(random.randint(0, 4))) # append presidents from enemy_choices to enemy_team
+enemy_team.append(enemy_choices.pop(random.randint(0, 3))) # Use .pop() in this process so enemy cannot have repeat presidents on their team.
 
-first_enemy_president = pygame.sprite.GroupSingle()
+first_enemy_president = pygame.sprite.GroupSingle() # Create a sprite Group to hold each of the enemy's presidents
 second_enemy_president = pygame.sprite.GroupSingle()
 third_enemy_president = pygame.sprite.GroupSingle()
 
-first_enemy_president.add(enemy_president)
-second_enemy_president.add(enemy_team[0])
+first_enemy_president.add(enemy_president) # Add the presidents on the enemy's team to the sprite groups
+second_enemy_president.add(enemy_team[0]) # Adding them to the sprite groups lets them be displayed on screen.
 third_enemy_president.add(enemy_team[1])
+
+refill_enemy_choices(enemy_team, enemy_choices) # Important if player chooses to player multiple times
 
 #Object Oriented Player Instantiation
 player_choices = [President('player', 'George Washington'),
               President('player', 'Abraham Lincoln'),
-              President('player', 'Donald Trump')]
+              President('player', 'Bill Clinton'),
+              President('player', 'Obama'),
+              President('player', 'Donald Trump'),
+              President('player', 'Joe Biden')] # List that holds presidents the player can pick from
 
 player_team = [] # Will hold the presidents on the player's team
 player_president = None # To Be Used as the player character in calculations
@@ -78,71 +72,72 @@ first_player_president = pygame.sprite.GroupSingle()
 second_player_president = pygame.sprite.GroupSingle()
 third_player_president = pygame.sprite.GroupSingle() # Used as the player sprite
 
-#-Buttons-:
+#Buttons:
 button_audio = pygame.mixer.Sound('audio/battle_button_click.mp3') # Audio used for most buttons
 #Home Screen Start Button
 start_button_sound = pygame.mixer.Sound('audio/start_button_click.mp3')
 start_button_image = pygame.image.load('graphics/start_button1.png').convert_alpha()
 start_button_hover = pygame.image.load('graphics/start_button2.png').convert_alpha()
 start_button = Button(500, 285, start_button_image, screen, 1, start_button_sound)
-#Character Select Buttons
+#Character Select Screen Buttons:
+#Scroll Buttons
 left_arrow_image = pygame.image.load('graphics/button_left_arrow1.png').convert_alpha()
 left_arrow_hover = pygame.image.load('graphics/button_left_arrow2.png').convert_alpha()
 right_arrow_image = pygame.image.load('graphics/button_right_arrow1.png').convert_alpha()
 right_arrow_hover = pygame.image.load('graphics/button_right_arrow2.png').convert_alpha()
 left_button = Button(50, 285, left_arrow_image, screen, 1, button_audio)
 right_button = Button(950, 285, right_arrow_image, screen, 1, button_audio)
-
+#Select Button
 select_button_image = pygame.image.load('graphics/button_select1.png').convert_alpha()
 select_button_hover = pygame.image.load('graphics/button_select2.png').convert_alpha()
 select_button = Button(290, 150, select_button_image, screen, 1, button_audio)
-
+#Unselect Button
 unselect_button_image = pygame.image.load('graphics/button_unselect1.png').convert_alpha()
 unselect_button_hover = pygame.image.load('graphics/button_unselect2.png').convert_alpha()
 unselect_button = Button(760, 150, unselect_button_image, screen, 1, button_audio)
-
+#Go Button
 go_button_image = pygame.image.load('graphics/button_go1.png').convert_alpha()
 go_button_hover = pygame.image.load('graphics/button_go2.png').convert_alpha()
 go_button = Button(500, 285, go_button_image, screen, 1, start_button_sound)
-#Battle Menu Buttons
-presidents_button_image = pygame.image.load('graphics/button_presidents1.png').convert_alpha()
-presidents_hover_button = pygame.image.load('graphics/button_presidents2.png').convert_alpha()
+
+#Battle Menu Buttons:
+#Fight Button:
 fight_button_image = pygame.image.load('graphics/button_fight1.png').convert_alpha()
 fight_hover_button = pygame.image.load('graphics/button_fight2.png').convert_alpha()
-presidents_button = Button(650, 500, presidents_button_image, screen, 1, button_audio)
 fight_button = Button(850, 500, fight_button_image, screen, 1, button_audio)
-#Move Buttons
+#Move1 Button
 move1_button_image = pygame.image.load('graphics/button_move1-1.png').convert_alpha()
 move1_button_hover = pygame.image.load('graphics/button_move1-2.png').convert_alpha()
 move1_button = Button(610, 485, move1_button_image, screen, 1, button_audio)
-#move1_text = move_font.render(player_president.move_list[0].name, False, 'Black')
 
+#Move2 Button
 move2_button_image = pygame.image.load('graphics/button_move2-1.png').convert_alpha()
 move2_button_hover = pygame.image.load('graphics/button_move2-2.png').convert_alpha()
 move2_button = Button(810, 485, move2_button_image, screen, 1, button_audio)
-#move2_text = move_font.render(player_president.move_list[1].name, False, 'Black')
 
+#Move3 Button
 move3_button_image = pygame.image.load('graphics/button_move3-1.png').convert_alpha()
 move3_button_hover = pygame.image.load('graphics/button_move3-2.png').convert_alpha()
 move3_button = Button(610, 542, move3_button_image, screen, 1, button_audio)
-#move3_text = move_font.render(player_president.move_list[2].name, False, 'Black')
 
+#Move4 Button
 move4_button_image = pygame.image.load('graphics/button_move4-1.png').convert_alpha()
 move4_button_hover = pygame.image.load('graphics/button_move4-2.png').convert_alpha()
 move4_button = Button(810, 542, move4_button_image, screen, 1, button_audio)
-#move4_text = move_font.render(player_president.move_list[3].name, False, 'Black')
 
+#Back Button
 back_button_image = pygame.image.load('graphics/button_back1.png').convert_alpha()
 back_button_image = pygame.transform.rotozoom(back_button_image, 0, 0.6)
 back_button_hover = pygame.image.load('graphics/button_back2.png').convert_alpha()
 back_button_hover = pygame.transform.rotozoom(back_button_hover, 0, 0.6)
 back_button = Button(935, 510, back_button_image, screen, 1, button_audio)
 
+#Confirm Actions Button
 confirm_button_image = pygame.image.load('graphics/button_confirm1.png').convert_alpha()
 confirm_button_hover = pygame.image.load('graphics/button_confirm2.png').convert_alpha()
 confirm_button = Button(800, 510, confirm_button_image, screen, 1, button_audio)
 
-#-Menu Screen-
+#Menu Screen:
 #Pokemon Title Card
 menu_title = pygame.image.load('graphics/pokemon_title.png').convert_alpha()
 menu_title = pygame.transform.rotozoom(menu_title, 0, 0.18)
@@ -164,11 +159,11 @@ ampersand = pygame.image.load('graphics/ampersand.png').convert_alpha()
 ampersand = pygame.transform.rotozoom(ampersand, 0, 0.09)
 ampersand_rect = ampersand.get_rect(center = (500, 430))
 
-#Menu Music
-menu_music = pygame.mixer.Sound('audio/menu_song.mp3')
-
 #-President Select Screen-
 #Background
+president_select_music = pygame.mixer.Sound('audio/spb.mp3')
+president_select_music.set_volume(0.6)
+can_play_president_select_music = True
 team_size = 0
 build_your_team = title_font.render(f'Build Your Team! ({team_size}/3)', False, 'White')
 build_box = pygame.Rect((100, 25), (800, 75))
@@ -196,47 +191,66 @@ player_box = pygame.Rect((650, 350), (325, 100))
 player_black_bar = pygame.Rect((663, 380), (300, 35))
 player_health_bar = pygame.Rect((663, 380), (300, 35))
 #Names on Boxes
-#player_name = name_font.render(player_president.name, False, 'Black')
 enemy_name = name_font.render(enemy_president.name, False, 'Black')
 #Health on Boxes
 enemy_health_card = name_font.render(f'HP: {enemy_president.health}'
                                      f'/{enemy_president.max_health}', False, 'Black')
-#Text Card
+#Card that Displays Text in Battle (Ex: Obama used <INSERT_MOVE_NAME_HERE>!)
 battle_text_box = pygame.image.load('graphics/battle_text_box.png').convert_alpha()
 battle_text_rect = battle_text_box.get_rect()
 battle_text_rect.center = (390, 505)
-#President Swap Menu in Battle
-president_swap_text = name_font.render('Would you like to swap presidents?', False, 'Black')
-battle_text1 = ""
-battle_text2 = ""
 
 #Music & Sounds
-battle_music = None # To be chosen randomly later
+menu_music = pygame.mixer.Sound('audio/menu_song.mp3') # Menu Music
+possible_battle_musics = [pygame.mixer.Sound('audio/Battle-Chairman_Rose.flac'),
+                pygame.mixer.Sound('audio/Battle-Marnie.flac'),
+                pygame.mixer.Sound('audio/B&W-Battle_Gym_Leader.mp3'),
+                pygame.mixer.Sound('audio/B&W-Battle_Wild.mp3'),
+                pygame.mixer.Sound('audio/B&W-Battle_Team_Plasma.mp3')]
+battle_music = random.choice(possible_battle_musics) # To be chosen randomly later
+battle_music.set_volume(0.8)
+possible_victory_musics = [pygame.mixer.Sound('audio/Marnie-Victory.flac'),
+                 pygame.mixer.Sound('audio/B&W-Team_Plasma_Victory.mp3')]
+victory_music = random.choice(possible_victory_musics)
+defeat_music = pygame.mixer.Sound('audio/spb_piano.mp3')
 heal_sound = pygame.mixer.Sound('audio/heal_sound.mp3')
-can_heal_sound = True
 stat_raise_sound = pygame.mixer.Sound('audio/stat_raise.mp3')
 stat_drop_sound = pygame.mixer.Sound('audio/stat_drop.mp3')
 
-#Trackers & Determinators
-selected_move = "" # Used to track the player's move selection during battle
-president_to_swap = None # Used to temporarily hold a president that is being swapped out of battle
-enemy_moves = enemy_president.move_list # Used to hold the enemy's moves
-enemy_selected_move = "" # Used to track the enemy's move selection during battle
-damage_to_deal = 0 # Used to determine damage in combat
-healing_to_do = 0 # Used to determine healing in combat
-count_damage_health = -100 # Used to track the damage or healing done in combat
-count_president_health = 0 # Used to increment/decrement health on name card
-player_is_faster = None # Used to determine who moves first
-turns_left = 2 # Used to prevent Player & Enemy from continuously damaging one anthother
-can_calc_speed = True # Used so speed is only calculated once in battle
-turn_can_change = True # Used to properly swap turns in battle
-can_calc_dmg_heals = True # Used to only calculate damage and heals once each turn
-first_iteration = True # Needed so music won't loop over itself.
-player_move_is_status_move = False # Used to determine if a player move affects stats rather than health
-enemy_move_is_status_move = False # Used to determine if an enemy move affects stats rather than health
-can_change_stats = True # Used to only change a president's stats once and only play stat change sound once
-running = True # Conventionally used variable for a pygame game loop. Should always equal True.
+#Game States
+home_screen = True # True if the home screen is being displayed
+president_select = False # True if the president select screen is being displayed
+battle = False # True if the battle screen is being displayed
+what_do = True # True if the player is being asked what they'll do in battle
+fight = False # True if the player has clicked the fight button
+confirmation = False # True when the player selects a move. Asks them to confirm actions
+attacks = False # True when the player clicks confirm button. Commences attacks in battle.
+player_deals_damage = False # True if it is the player's turn to use a move in battle.
+enemy_deals_damage = False # True if it is the enemy's turn to use a move in battle.
+next_player_president = False # True if the player's president fainted and they have to swap to a new one.
+next_enemy_president = False # True if the enemy's president fainted and they have to swap to a new one.
+win = False # True if the player defeated all of the enemy's presidents and won.
+lose = False # True if the enemy defeated all of the player's presidents.
 
+#Trackers & Determinators For Battle
+selected_move = None # Used to track the player's move selection during battle.
+enemy_moves = enemy_president.move_list # Used to hold the enemy's moves.
+enemy_selected_move = None # Used to track the enemy's move selection during battle.
+damage_to_deal = 0 # Used to hold the damage that must be dealt in a turn.
+healing_to_do = 0 # Used to hold the healing that must be done in a turn.
+can_play_heal_sound = True # Used so the heal sound is only played once when a heal move is used.
+count_damage_health = -100 # Used to track the damage or healing done in combat. Also used as a timer so text is displayed for longer in battle.
+count_president_health = 0 # Used to increment/decrement health on a president's name card in battle.
+can_calc_dmg_heals = True # Used to only calculate damage and heals once each turn.
+can_calc_speed = True # Used so speed is only calculated once before attacks commence in battle.
+player_is_faster = None # Used to determine who moves first in battle.
+turns_left = 2 # Used to prevent Player & Enemy from continuously damaging one anthother by giving them each one turn per move selection.
+turn_can_change = True # Used to properly swap turns in battle.
+first_iteration = True # Needed so music won't loop over itself.
+player_move_is_status_move = False # Used to determine if a player move affects stats rather than hitpoints.
+enemy_move_is_status_move = False # Used to determine if an enemy move affects stats rather than hitpoints.
+can_change_stats = True # Used to only change a president's stats once and only play stat change sound once.
+running = True # Conventionally used variable for a pygame game loop. Should always equal True.
 
 #Game Loop
 while running:
@@ -247,68 +261,71 @@ while running:
             pygame.quit()
             exit()
         
-        #Transition from Home Screen to President Select
+        #Checking for Possible Home Screen Events
         if home_screen:
+            #Transition to President Select Screen
             if start_button.is_clicked() and home_screen:
-                menu_music.fadeout(1000) # Fades out music over time passed (miliseconds)
+                menu_music.fadeout(1000) # Fades out menu music over time passed (miliseconds)
                 first_iteration = True
                 home_screen = False
                 president_select = True
 
-        #President Select Events
+        #Checking for Possible President Select Screen Events
         elif president_select:
-            #President Scrolling
-            if left_button.is_clicked() and president_select:
+            #If the Left Arrow Button is Clicked
+            if left_button.is_clicked() and president_select and team_size < 3:
                 president_number -= 1
                 if president_number == -1:
-                    president_number = 2
-            if right_button.is_clicked() and president_select:
+                    president_number = 5
+            #If the Right Arrow Button is Clicked
+            if right_button.is_clicked() and president_select and team_size < 3:
                 president_number += 1
-                if president_number == 3:
+                if president_number == 6:
                     president_number = 0
 
-            #President Selection
+            #If a President's Select Button is Clicked
             if select_button.is_clicked() and not current_president.is_selected and team_size < 3:
                 current_president.is_selected = True
                 player_team.append(current_president)
                 team_size += 1
+            #If a President's Unselect Button is Clicked
             if unselect_button.is_clicked() and current_president.is_selected and team_size > 0:
                 current_president.is_selected = False
                 player_team.pop()
                 team_size -= 1
 
-            #Transition from President Select to Battle
-            #Create Player President and Player Sprite
+            #If the Go Button is Clicked (Transition from President Select to Battle)
             if go_button.is_clicked() and team_size == 3:
+                president_select_music.stop()
+                #Add the Selected Presidents to the Predefined Sprite Groups
                 first_player_president.add(player_team[0])
                 second_player_president.add(player_team[1])
                 third_player_president.add(player_team[2])
-                battle = True
-                president_select = False
+                #Assign Player President (Object that Represents the Player) and Player Sprite (Player Character's Image on Screen)
                 player_president = player_team[0]
-                player_team.pop(0) # player_team now only holds presidents not in battle
+                player_team.pop(0) # player_team now only holds the presidents not currently battling
+                #Assign Text for the Move Buttons
                 move1_text = move_font.render(player_president.move_list[0].name, False, 'Black')
                 move2_text = move_font.render(player_president.move_list[1].name, False, 'Black')
                 move3_text = move_font.render(player_president.move_list[2].name, False, 'Black')
                 move4_text = move_font.render(player_president.move_list[3].name, False, 'Black')
+                #Assign Text for the Player Card Displayed in Battle
                 player_name = name_font.render(player_president.name, False, 'Black')
-                player_health_card = name_font.render(f'HP: {player_president.health}'
-                                      f'/{player_president.max_health}', False, 'Black')
+                player_health_card = name_font.render(f'HP: {player_president.health}/{player_president.max_health}', False, 'Black')
+                #Change Game State from President Select to Battle
+                president_select = False
+                battle = True
                 
-        #Battle Menu Events
+        #CHecking for Possible Battle Menu Events
         elif battle:
-            #Pick Battle Music
+            #Play Battle Music
             if first_iteration:
-                battle_music = random.choice(BATTLE_MUSIC)
-                battle_music.set_volume(0.8)
                 battle_music.play(loops=-1)
                 first_iteration = False
-            #Battle Phases
+            #Checking for Possible "What Will You Do" Events
             if what_do:
-                if presidents_button.is_clicked() and what_do:
-                    print('Test Successful')
-                elif fight_button.is_clicked() and what_do:
-                    #Booleans to Determine Battle Menu Display
+                #
+                if fight_button.is_clicked() and what_do:
                     what_do = False
                     fight = True
             
@@ -330,7 +347,7 @@ while running:
                     fight = False
                     confirmation = True
                 elif back_button.is_clicked() and fight:
-                    selected_move = ""
+                    selected_move = None
                     fight = False
                     what_do = True
             elif confirmation:
@@ -368,6 +385,9 @@ while running:
     #President Select Screen
     elif president_select:
         #President Select Screen Background
+        if can_play_president_select_music:
+            president_select_music.play(loops=-1)
+            can_play_president_select_music = False
         screen.blit(oval_office, oval_office_rect)
         pygame.draw.rect(screen, 'Black', build_box)
         build_your_team = title_font.render(f'Build Your Team! ({team_size}/3)', False, 'White')
@@ -401,17 +421,38 @@ while running:
             president_name = name_font.render(current_president.name, False, 'Black')
             pygame.draw.rect(screen, 'White', president_name_box)
             screen.blit(president_name, (410, 140))
+            screen.blit(BillClinton('player').selection_image, (345, 170))
+
+        elif president_number == 3:
+            current_president = player_choices[3]
+            president_name = name_font.render(current_president.name, False, 'Black')
+            pygame.draw.rect(screen, 'White', president_name_box)
+            screen.blit(president_name, (410, 140))
+            screen.blit(Obama('player').selection_image, (345, 170))
+
+        elif president_number == 4:
+            current_president = player_choices[4]
+            president_name = name_font.render(current_president.name, False, 'Black')
+            pygame.draw.rect(screen, 'White', president_name_box)
+            screen.blit(president_name, (410, 140))
             screen.blit(DonaldTrump('player').selection_image, (345, 170))
+
+        elif president_number == 5:
+            current_president = player_choices[5]
+            president_name = name_font.render(current_president.name, False, 'Black')
+            pygame.draw.rect(screen, 'White', president_name_box)
+            screen.blit(president_name, (410, 140))
+            screen.blit(JoeBiden('player').selection_image, (345, 170))
 
         if team_size == 3:
             go_button.draw(go_button_image, go_button_hover)
 
-    else: # Battle Screen
+    elif battle: # Battle Screen
 
         #Places the Battlefiled On the Screen
         screen.blit(battle_field, (0, 0))
         
-        #Determines which President to Displat for Eeach Team
+        #Determines which President to Display for Eeach Team
         if len(enemy_team) == 2:
             first_enemy_president.draw(screen)
             if not win and not next_enemy_president:
@@ -469,7 +510,6 @@ while running:
         #Display Battle Menu
         if what_do:
             what_will_you_do(screen) # Function from battle file
-            presidents_button.draw(presidents_button_image, presidents_hover_button)
             fight_button.draw(fight_button_image, fight_hover_button)
 
         #Player Selects a Move to Use in Battle:
@@ -614,10 +654,10 @@ while running:
                         count_damage_health += 1
 
                 #If healing move, play sound once
-                elif healing_to_do and can_heal_sound:
+                elif healing_to_do and can_play_heal_sound:
                     if player_health_bar.width < 300:
                         heal_sound.play()
-                    can_heal_sound = False
+                    can_play_heal_sound = False
                     count_damage_health += 1
 
                 #Provides a Buffer Before Damage or Stat Change
@@ -645,7 +685,7 @@ while running:
                         turns_left -= 1
                         can_calc_dmg_heals = True
                         can_change_stats = True
-                        can_heal_sound = True
+                        can_play_heal_sound = True
                         player_move_is_status_move = False
                         if not turns_left:
                             turns_left = 2
@@ -729,10 +769,10 @@ while running:
                     count_damage_health += 1
 
                 #If healing move, play sound once
-                elif healing_to_do and can_heal_sound:
+                elif healing_to_do and can_play_heal_sound:
                     if enemy_health_bar.width < 300:
                         heal_sound.play()
-                    can_heal_sound = False
+                    can_play_heal_sound = False
                     count_damage_health += 1
 
                 #Provides a Buffer Before Damage Reduction
@@ -759,7 +799,7 @@ while running:
                         turns_left -= 1
                         can_calc_dmg_heals = True
                         can_change_stats = True
-                        can_heal_sound = True
+                        can_play_heal_sound = True
                         enemy_move_is_status_move = False
                         if not turns_left:
                             turns_left = 2
@@ -776,6 +816,10 @@ while running:
             
         #Swap in Player's Next President
         elif next_player_president:
+            battle_text1 = name_font.render(f'{player_president.name} fainted!', False, 'Black')
+            screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
+            screen.blit(battle_text1, (170, 470))
+
             if player_president.rect.y < 620:
                 player_president.move_down()
             else:
@@ -784,7 +828,7 @@ while running:
                 turns_left = 2
                 can_calc_dmg_heals = True
                 can_change_stats = True
-                can_heal_sound = True
+                can_play_heal_sound = True
                 enemy_move_is_status_move = False
                 enemy_deals_damage = False
                 player_deals_damage = False
@@ -806,6 +850,12 @@ while running:
 
         #Swap in Enemy's Next President     
         elif next_enemy_president:
+            battle_text1 = name_font.render(f'The opposing {enemy_president.name}', False, 'Black')
+            battle_text2 = name_font.render('fainted!', False, 'Black')
+            screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
+            screen.blit(battle_text1, (170, 470))
+            screen.blit(battle_text2, (170, 490))
+
             if enemy_president.rect.y < 620:
                 enemy_president.move_down()
             else:
@@ -815,7 +865,7 @@ while running:
                 turns_left = 2
                 can_calc_dmg_heals = True
                 can_change_stats = True
-                can_heal_sound = True
+                can_play_heal_sound = True
                 enemy_move_is_status_move = False
                 enemy_deals_damage = False
                 player_deals_damage = False
@@ -837,8 +887,9 @@ while running:
         elif win:
             if first_iteration:
                 battle_music.stop()
-                random.choice(VICTORY_MUSIC).play()
+                victory_music.play()
                 first_iteration = False
+
             if enemy_president.rect.y < 620:
                 enemy_president.move_down()
 
@@ -847,9 +898,15 @@ while running:
             screen.blit(battle_text1, (170, 470))
             player_president.stat_reset()
             enemy_president.stat_reset()
+
+
         
         #Diplays a Loss Message
         elif lose:
+            if first_iteration:
+                battle_music.stop()
+                defeat_music.play()
+
             if player_president.rect.y < 620:
                 player_president.move_down()
 

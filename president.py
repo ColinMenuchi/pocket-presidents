@@ -31,18 +31,48 @@ class President(pygame.sprite.Sprite):
                     self.idle = AbrahamLincoln('player').idle
                     self.move_list = [Move('Emancipate', 0, 33, None), Move('Four Score', 20, 0, None),
                                       Move('Divided House', 25, 0, None), Move('For The Union', 0, 0, 'Attack Up')]
+
+                case 'Bill Clinton':
+                    self.health = 100
+                    self.max_health = 100
+                    self.attack = 30
+                    self.defense = 40
+                    self.speed = 50
+                    self.idle = BillClinton('enemy').idle
+                    self.move_list = [Move('Sign NAFTA', 0, 0, 'Attack Up'), Move('Ms. Lewinsky?', 0, 0, 'Defense Up'),
+                                      Move('Send in Hillary', 30, 0, None), Move('Egg McMuffin', 0, 33, None)]
+
                 case 'Donald Trump':
                     self.health = 150
                     self.max_health = 150
                     self.attack = 20
-                    self.defense = 50
-                    self.speed = 12.5
+                    self.defense = 45
+                    self.speed = 20
                     self.idle = DonaldTrump('player').idle
                     self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
-                                      Move('Fake News', 0, 0, 'Attack Up'), Move('Tremendous', 0, 50, None)]
+                                      Move('Fake News', 0, 0, 'Defense Down'), Move('Uuuuuuge', 0, 50, None)]
 
                 case 'Joe Biden':
-                    joe_biden_idle1 = pygame.image.load('graphics/joe_biden1.png').convert_alpha
+                    self.health = 150
+                    self.max_health = 150
+                    self.attack = 40
+                    self.defense = 30
+                    self.speed = 30
+                    self.idle = JoeBiden('player').idle
+                    self.move_list = [Move('Biden Blast', 25, 0, None), Move('Choclate Chip', 0, 50, None),
+                                      Move('Sniff', 0, 0, 'Defense Down'), Move('Asufutimaeh-', 0, 0, 'Speed Up')]
+
+                case 'Obama':
+                    self.health = 100
+                    self.max_health = 100
+                    self.attack = 40
+                    self.defense = 50
+                    self.speed = 50
+                    self.idle = Obama('player').idle
+                    self.move_list = [Move('Obamacare', 0, 33, None), Move('OBAMEHAMEHA!!!', 25, 0, None),
+                                      Move('Fellow Americans', 0, 0, 'Attack Up'), Move("Michelle Lunches", 0, 0, 'Defense Down')]
+                    
+
                 case 'George Washington':
                     self.health = 75
                     self.max_health = 75
@@ -50,8 +80,8 @@ class President(pygame.sprite.Sprite):
                     self.defense = 40
                     self.speed = 60
                     self.idle = GeorgeWashington('player').idle
-                    self.move_list = [Move('Cross the Delaware', 0, 0, 'Attack Up'), Move('Tar and Feather', 0, 0, 'Speed Down'),
-                                      Move('Valley Forge', 0, 25, None), Move('Revolutionary Onslaught', 30, 0, None)]
+                    self.move_list = [Move('Cross Delaware', 0, 0, 'Attack Up'), Move('Tar and Feather', 0, 0, 'Speed Down'),
+                                      Move('Valley Forge', 0, 50, None), Move('Bayonet Charge', 25, 0, None)]
                 case _:
                     print('Invalid Name')
             
@@ -63,30 +93,6 @@ class President(pygame.sprite.Sprite):
         elif self.team == 'enemy':
             #Picks From Enemy Presidential Sprites
             match self.name:
-                case 'Obama':
-                    obama_idle1 = pygame.image.load('graphics/obama1.png').convert_alpha()
-                    obama_idle2 = pygame.image.load('graphics/obama2.png').convert_alpha()
-                    obama_idle3 = pygame.image.load('graphics/obama3.png').convert_alpha()
-                    obama_idle4 = pygame.image.load('graphics/obama4.png').convert_alpha()
-                    self.idle = [obama_idle1, obama_idle2, obama_idle3, 
-                                 obama_idle4, obama_idle3, obama_idle2]
-                    
-                case 'Bill Clinton':
-                    clinton_idle1 = pygame.image.load('graphics/clinton1.png').convert_alpha()
-                    clinton_idle2 = pygame.image.load('graphics/clinton2.png').convert_alpha()
-                    clinton_idle3 = pygame.image.load('graphics/clinton3.png').convert_alpha()
-                    self.idle = [clinton_idle1, clinton_idle2, clinton_idle3, clinton_idle2]
-
-                case 'Donald Trump':
-                    self.health = 150
-                    self.max_health = 150
-                    self.attack = 20
-                    self.defense = 50
-                    self.speed = 12.5
-                    self.idle = DonaldTrump('enemy').idle
-                    self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
-                                      Move('Fake News', 0, 0, 'Attack Up'), Move('Tremendous', 0, 50, None)]
-                    
                 case 'Abraham Lincoln':
                     self.health = 100
                     self.max_health = 100
@@ -96,7 +102,50 @@ class President(pygame.sprite.Sprite):
                     self.idle = AbrahamLincoln('enemy').idle
                     self.move_list = [Move('Emancipate', 0, 33, None), Move('Four Score', 20, 0, None),
                                       Move('Divided House', 25, 0, None), Move('For The Union', 0, 0, 'Attack Up')]
+
+                case 'Bill Clinton':
+                    self.health = 100
+                    self.max_health = 100
+                    self.attack = 30
+                    self.defense = 40
+                    self.speed = 50
+                    self.idle = BillClinton('enemy').idle
+                    self.move_list = [Move('Sign NAFTA', 0, 0, 'Attack Up'), Move('Ms. Lewinsky?', 0, 0, 'Defense Up'),
+                                      Move('Send in Hillary', 30, 0, None), Move('Egg McMuffin', 0, 33, None)]
+
+
+                case 'Donald Trump':
+                    self.health = 150
+                    self.max_health = 150
+                    self.attack = 20
+                    self.defense = 45
+                    self.speed = 12.5
+                    self.idle = DonaldTrump('enemy').idle
+                    self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
+                                      Move('Fake News', 0, 0, 'Defense Down'), Move('Uuuuuuge', 0, 50, None)]
                     
+                case 'Joe Biden':
+                    self.health = 150
+                    self.max_health = 150
+                    self.attack = 40
+                    self.defense = 30
+                    self.speed = 30
+                    self.idle = JoeBiden('enemy').idle
+                    self.move_list = [Move('Biden Blast', 25, 0, None), Move('Choclate Chip', 0, 50, None),
+                                      Move('Sniff', 0, 0, 'Defense Down'), Move('Asufutimaeh-', 0, 0, 'Speed Up')]
+
+                    
+                case 'Obama':
+                    self.health = 100
+                    self.max_health = 100
+                    self.attack = 40
+                    self.defense = 50
+                    self.speed = 50
+                    self.idle = Obama('enemy').idle
+                    self.move_list = [Move('Obamacare', 0, 33, None), Move('OBAMEHAMEHA!!!', 25, 0, None),
+                                      Move('Fellow Americans', 0, 0, 'Attack Up'), Move("Michelle Lunches", 0, 0, 'Defense Down')]
+                    
+
                 case 'George Washington':
                     self.health = 75
                     self.max_health = 75
@@ -104,8 +153,8 @@ class President(pygame.sprite.Sprite):
                     self.defense = 40
                     self.speed = 60
                     self.idle = GeorgeWashington('enemy').idle
-                    self.move_list = [Move('Cross the Delaware', 0, 0, 'Attack Up'), Move('Tar and Feather', 0, 0, 'Speed Down'),
-                                      Move('Valley Forge', 0, 25, None), Move('Revolutionary Onslaught', 30, 0, None)]
+                    self.move_list = [Move('Cross Delaware', 0, 0, 'Attack Up'), Move('Tar and Feather', 0, 0, 'Speed Down'),
+                                      Move('Valley Forge', 0, 50, None), Move('Bayonet Charge', 25, 0, None)]
                     
             self.image = self.idle[self.animation_index]
             self.screen_coords = (630, 90)
@@ -159,7 +208,7 @@ class President(pygame.sprite.Sprite):
 
 class AbrahamLincoln():
     def __init__(self, lincolns_team):
-        self.selection_image = lincoln_idle3 = pygame.image.load('graphics/enemy_lincoln3.png').convert_alpha()
+        self.selection_image = pygame.image.load('graphics/enemy_lincoln3.png').convert_alpha()
         self.selection_image = pygame.transform.rotozoom(self.selection_image, 0, 1.3)
         if lincolns_team == 'enemy':
             lincoln_idle1 = pygame.image.load('graphics/enemy_lincoln1.png').convert_alpha()
@@ -192,12 +241,29 @@ class AbrahamLincoln():
                          lincoln_idle5, lincoln_idle5, lincoln_idle5, lincoln_idle4]
 
 class BillClinton():
-    def __init__(self):
-        self.head = pygame.image.load('graphics/head_bill_clinton.png').convert_alpha()
+    def __init__(self, clintons_team):
+        self.selection_image = clinton_idle1 = pygame.image.load('graphics/enemy_clinton1.png').convert_alpha()
+        self.selection_image = pygame.transform.rotozoom(self.selection_image, 0, 1.3)
+        if clintons_team == 'enemy':
+            clinton_idle1 = pygame.image.load('graphics/enemy_clinton1.png').convert_alpha()
+            clinton_idle2 = pygame.image.load('graphics/enemy_clinton2.png').convert_alpha()
+            clinton_idle3 = pygame.image.load('graphics/enemy_clinton3.png').convert_alpha()
+
+            self.idle = [clinton_idle1, clinton_idle2, clinton_idle3, clinton_idle2]
+
+        elif clintons_team == 'player':
+            clinton_idle1 = pygame.image.load('graphics/player_clinton1.png').convert_alpha()
+            clinton_idle1 = pygame.transform.rotozoom(clinton_idle1, 0, 2)
+            clinton_idle2 = pygame.image.load('graphics/player_clinton2.png').convert_alpha()
+            clinton_idle2 = pygame.transform.rotozoom(clinton_idle2, 0, 2)
+            clinton_idle3 = pygame.image.load('graphics/player_clinton3.png').convert_alpha()
+            clinton_idle3 = pygame.transform.rotozoom(clinton_idle3, 0, 2)
+
+            self.idle = [clinton_idle1, clinton_idle2, clinton_idle3, clinton_idle2]
 
 class DonaldTrump():
     def __init__(self, trumps_team):
-        self.selection_image = trump_idle1 = pygame.image.load('graphics/enemy_trump1.png').convert_alpha()
+        self.selection_image = pygame.image.load('graphics/enemy_trump1.png').convert_alpha()
         self.selection_image = pygame.transform.rotozoom(self.selection_image, 0, 1.3)
         if trumps_team == 'enemy':
             trump_idle1 = pygame.image.load('graphics/enemy_trump1.png').convert_alpha()
@@ -220,7 +286,79 @@ class DonaldTrump():
             
             self.idle = [trump_idle1, trump_idle2, trump_idle3, trump_idle2, 
                          trump_idle3, trump_idle1, trump_idle1, trump_idle1]
+
+class JoeBiden():
+    def __init__(self, bidens_team):
+        self.selection_image = pygame.image.load('graphics/enemy_biden9.png').convert_alpha()
+        self.selection_image = pygame.transform.rotozoom(self.selection_image, 0, 1.3)
+        if bidens_team == 'enemy':
+            biden_idle1 = pygame.image.load('graphics/enemy_biden1.png').convert_alpha()
+            biden_idle2 = pygame.image.load('graphics/enemy_biden2.png').convert_alpha()
+            biden_idle3 = pygame.image.load('graphics/enemy_biden3.png').convert_alpha()
+            biden_idle4 = pygame.image.load('graphics/enemy_biden4.png').convert_alpha()
+            biden_idle5 = pygame.image.load('graphics/enemy_biden5.png').convert_alpha()
+            biden_idle6 = pygame.image.load('graphics/enemy_biden6.png').convert_alpha()
+            biden_idle7 = pygame.image.load('graphics/enemy_biden7.png').convert_alpha()
+            biden_idle8 = pygame.image.load('graphics/enemy_biden8.png').convert_alpha()
+            biden_idle9 = pygame.image.load('graphics/enemy_biden9.png').convert_alpha()
+            biden_idle10 = pygame.image.load('graphics/enemy_biden10.png').convert_alpha()
+
+            self.idle = [biden_idle1, biden_idle2, biden_idle3, biden_idle4, biden_idle5,
+                         biden_idle6, biden_idle7, biden_idle8, biden_idle9, biden_idle10,
+                         biden_idle9, biden_idle10, biden_idle9, biden_idle8, biden_idle7,
+                         biden_idle6, biden_idle5, biden_idle4, biden_idle3, biden_idle2,
+                         biden_idle1, biden_idle1]
             
+        elif bidens_team == 'player':
+            biden_idle1 = pygame.image.load('graphics/player_biden1.png').convert_alpha()
+            biden_idle1 = pygame.transform.rotozoom(biden_idle1, 0, 2)
+            biden_idle2 = pygame.image.load('graphics/player_biden2.png').convert_alpha()
+            biden_idle2 = pygame.transform.rotozoom(biden_idle2, 0, 2)
+            biden_idle3 = pygame.image.load('graphics/player_biden3.png').convert_alpha()
+            biden_idle3 = pygame.transform.rotozoom(biden_idle3, 0, 2)
+            biden_idle4 = pygame.image.load('graphics/player_biden4.png').convert_alpha()
+            biden_idle4 = pygame.transform.rotozoom(biden_idle4, 0, 2)
+            biden_idle5 = pygame.image.load('graphics/player_biden5.png').convert_alpha()
+            biden_idle5 = pygame.transform.rotozoom(biden_idle5, 0, 2)
+            biden_idle6 = pygame.image.load('graphics/player_biden6.png').convert_alpha()
+            biden_idle6 = pygame.transform.rotozoom(biden_idle6, 0, 2)
+            biden_idle7 = pygame.image.load('graphics/player_biden7.png').convert_alpha()
+            biden_idle7 = pygame.transform.rotozoom(biden_idle7, 0, 2)
+            biden_idle8 = pygame.image.load('graphics/player_biden8.png').convert_alpha()
+            biden_idle8 = pygame.transform.rotozoom(biden_idle8, 0, 2)
+            
+            self.idle = [biden_idle1, biden_idle2, biden_idle3, biden_idle4, biden_idle5,
+                         biden_idle6, biden_idle7, biden_idle8, biden_idle1, biden_idle1,
+                         biden_idle1, biden_idle1, biden_idle1, biden_idle8, biden_idle7,
+                         biden_idle6, biden_idle5, biden_idle4, biden_idle3, biden_idle2,
+                         biden_idle1, biden_idle1]
+
+class Obama():
+    def __init__(self, obamas_team):
+        self.selection_image = pygame.image.load('graphics/enemy_obama1.png').convert_alpha()
+        self.selection_image = pygame.transform.rotozoom(self.selection_image, 0, 1.3)
+        if obamas_team == 'enemy':
+            obama_idle1 = pygame.image.load('graphics/enemy_obama1.png')
+            obama_idle2 = pygame.image.load('graphics/enemy_obama2.png')
+            obama_idle3 = pygame.image.load('graphics/enemy_obama3.png')
+            obama_idle4 = pygame.image.load('graphics/enemy_obama4.png')
+
+            self.idle = [obama_idle1, obama_idle2, obama_idle3, obama_idle4,
+                         obama_idle3, obama_idle2]
+            
+        elif obamas_team == 'player':
+            obama_idle1 = pygame.image.load('graphics/player_obama1.png')
+            obama_idle1 = pygame.transform.rotozoom(obama_idle1, 0, 2)
+            obama_idle2 = pygame.image.load('graphics/player_obama2.png')
+            obama_idle2 = pygame.transform.rotozoom(obama_idle2, 0, 2)
+            obama_idle3 = pygame.image.load('graphics/player_obama3.png')
+            obama_idle3 = pygame.transform.rotozoom(obama_idle3, 0, 2)
+            obama_idle4 = pygame.image.load('graphics/player_obama4.png')
+            obama_idle4 = pygame.transform.rotozoom(obama_idle4, 0, 2)
+
+            self.idle = [obama_idle1, obama_idle2, obama_idle3, obama_idle4,
+                         obama_idle3, obama_idle2]
+
 class GeorgeWashington():
     def __init__(self, washingtons_team):
         self.selection_image = pygame.image.load('graphics/enemy_washington8.png').convert_alpha()
