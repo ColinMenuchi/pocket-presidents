@@ -45,7 +45,7 @@ class President(pygame.sprite.Sprite):
                 case 'Donald Trump':
                     self.health = 150
                     self.max_health = 150
-                    self.attack = 30
+                    self.attack = 35
                     self.defense = 35
                     self.speed = 20
                     self.idle = DonaldTrump('player').idle
@@ -117,7 +117,7 @@ class President(pygame.sprite.Sprite):
                 case 'Donald Trump':
                     self.health = 150
                     self.max_health = 150
-                    self.attack = 30
+                    self.attack = 35
                     self.defense = 35
                     self.speed = 20
                     self.idle = DonaldTrump('enemy').idle
