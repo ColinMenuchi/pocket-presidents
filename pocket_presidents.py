@@ -324,7 +324,7 @@ while running:
             #If a President's Unselect Button is Clicked
             if unselect_button.is_clicked() and current_president.is_selected and team_size > 0:
                 current_president.is_selected = False
-                player_team.pop()
+                player_team.pop(player_team.index(current_president))
                 team_size -= 1
 
             #If the Go Button is Clicked (Transition from President Select to Battle)
