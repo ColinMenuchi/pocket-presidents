@@ -8,12 +8,12 @@ Pokemon Showdown. Build a team of presidents and see if you can defend
 the constitution better than your opponent. Or don't. Not all presidents
 were known for that *wink* *wink* *nudge* nudge*.
 Pay close attention to the comments to understand what each thing does.
-Lines 1-280 are just imports, instantiating objects, or loading images/text.
-Lines 282-End are what hold the game loop.
-Lines
-Lines
-Lines
-Lines
+Lines 1-285 are just imports, instantiating objects, or loading images/text.
+Lines 286-End are what hold the game loop.
+Lines 287-472: Button Actions & Pygame Events
+Lines 475-495: Home Screen
+Lines 497-561: President Select Screen
+Lines 562-End: Battle Screen & Sequence
 """
 import pygame
 from president import President, GeorgeWashington, AbrahamLincoln, BillClinton, Obama, DonaldTrump, JoeBiden
