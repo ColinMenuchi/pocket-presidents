@@ -646,19 +646,18 @@ while running:
         elif attacks: # Attack Sequence
             #Determine Who Moves First:
             if turns_left == 2 and can_calc_speed:
-                player_is_faster = compare_speed \
-                    (player_president, enemy_president)
+                player_is_faster = compare_speed(player_president, enemy_president)
                 can_calc_speed = False
             elif turns_left == 1 and turn_can_change:
                 player_is_faster = not player_is_faster
                 turn_can_change = False
             
             if player_is_faster:
-            #-Display Message of Move Being Used-
-            #If move isn't stat changing or provide a time buffer if it is
+            #-Display Message of Move Being Used
+            #If the move isn't stat changing or provide a time buffer if it is
                 if not player_move_is_status_move or count_damage_health < 0:
                     battle_text1 = name_font.render(f'{player_president.name} used ', False, 'Black')
-                    battle_text2 = name_font.render (f'{selected_move.name}!', False, 'Black')
+                    battle_text2 = name_font.render(f'{selected_move.name}!', False, 'Black')
                 screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
                 screen.blit(battle_text1, (170, 470))
                 screen.blit(battle_text2, (170, 490))
@@ -784,10 +783,12 @@ while running:
                         player_deals_damage = False
                         enemy_deals_damage = False
                         enemy_deaths += 1
+                        #If Enemy Has 3 Deaths, Player Wins
                         if enemy_deaths == 3:
                             first_iteration = True
                             win = True
                         else:
+                            #Else, Swap to Their Next President
                             attacks = False
                             next_enemy_president = True
 
@@ -940,6 +941,7 @@ while running:
             if player_president.rect.y < 620:
                 player_president.move_down()
             else:
+                #Reset Trackers
                 damage_to_deal = 0
                 count_damage_health = -100
                 turns_left = 2
@@ -962,7 +964,7 @@ while running:
                 move4_text = move_font.render(player_president.move_list[3].name, False, 'Black')
                 player_name = name_font.render(player_president.name, False, 'Black')
                 player_health_card = name_font.render(f'HP: {player_president.health}'
-                                      f'/{player_president.max_health}', False, 'Black')
+                                                      f'/{player_president.max_health}', False, 'Black')
 
         #Swap in Enemy's Next President     
         elif next_enemy_president:
@@ -996,7 +998,7 @@ while running:
                 enemy_moves = enemy_president.move_list
                 enemy_name = name_font.render(enemy_president.name, False, 'Black')
                 enemy_health_card = name_font.render(f'HP: {enemy_president.health}'
-                                      f'/{enemy_president.max_health}', False, 'Black')
+                                                     f'/{enemy_president.max_health}', False, 'Black')
 
         #Displays a Win Message
         elif win:
