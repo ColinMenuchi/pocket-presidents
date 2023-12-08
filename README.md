@@ -66,7 +66,9 @@ I claim ownership of all code, presidential sprites, and button images used in t
 The following files are not mine, nor do I claim owndership of them:
 (graphics/ampersand.png) - From: https://www.glitschkastudios.com/work/dungeons-dragons
 (graphics/menu_background.jpeg) - From: https://www.bbc.com/news/election-us-2020-54003441
-(graphics/oval_office.jpeg) - From: https://www.npr.org/sections/president-biden-takes-office/2021/01/21/959223157 photos-president-bidens-redecorated-oval-office
+(graphics/oval_office.jpeg) - From: https://www.npr.org/sections/president-biden-takes-office/2021/01/21/959223157
+(graphics/pokemon_title.png) - From: https://www.cheatcc.com/articles/the-history-of-the-pokemon-logo/
+photos-president-bidens-redecorated-oval-office
 (graphics/pokemon_battlefield2.webp) - From: https://pokemon-reborn.fandom.com/wiki/Fairy_Tale_Field
 (audio/B&W-Battle_Gym_Leader.mp3) - From: https://downloads.khinsider.com/game-soundtracks/album/pokemon-black-and-white
 (audio/B&W-Battle_Team_Plasma.mp3) - From: https://downloads.khinsider.com/game-soundtracks/album/pokemon-black-and-white
