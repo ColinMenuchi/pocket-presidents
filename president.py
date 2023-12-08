@@ -25,8 +25,8 @@ class President(pygame.sprite.Sprite):
                 case 'Abraham Lincoln':
                     self.health = 100
                     self.max_health = 100
-                    self.attack = 37.5
-                    self.defense = 37.5
+                    self.attack = 42.5
+                    self.defense = 35
                     self.speed = 37.5
                     self.idle = AbrahamLincoln('player').idle
                     self.move_list = [Move('Emancipate', 0, 33, None), Move('Four Score', 20, 0, None),
@@ -36,17 +36,17 @@ class President(pygame.sprite.Sprite):
                     self.health = 100
                     self.max_health = 100
                     self.attack = 30
-                    self.defense = 40
-                    self.speed = 50
-                    self.idle = BillClinton('enemy').idle
+                    self.defense = 42.5
+                    self.speed = 40
+                    self.idle = BillClinton('player').idle
                     self.move_list = [Move('Sign NAFTA', 0, 0, 'Attack Up'), Move('Ms. Lewinsky?', 0, 0, 'Defense Up'),
                                       Move('Send in Hillary', 30, 0, None), Move('Egg McMuffin', 0, 33, None)]
 
                 case 'Donald Trump':
                     self.health = 150
                     self.max_health = 150
-                    self.attack = 20
-                    self.defense = 45
+                    self.attack = 30
+                    self.defense = 35
                     self.speed = 20
                     self.idle = DonaldTrump('player').idle
                     self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
@@ -60,17 +60,17 @@ class President(pygame.sprite.Sprite):
                     self.speed = 30
                     self.idle = JoeBiden('player').idle
                     self.move_list = [Move('Biden Blast', 25, 0, None), Move('Choclate Chip', 0, 50, None),
-                                      Move('Sniff', 0, 0, 'Defense Down'), Move('Asufutimaeh-', 0, 0, 'Speed Up')]
+                                      Move('Sniff', 0, 0, 'Attack Down'), Move('Asufutimaeh-', 0, 0, 'Speed Up')]
 
                 case 'Obama':
                     self.health = 100
                     self.max_health = 100
                     self.attack = 40
-                    self.defense = 50
+                    self.defense = 35
                     self.speed = 50
                     self.idle = Obama('player').idle
-                    self.move_list = [Move('Obamacare', 0, 33, None), Move('OBAMEHAMEHA!!!', 25, 0, None),
-                                      Move('Fellow Americans', 0, 0, 'Attack Up'), Move("Michelle Lunches", 0, 0, 'Defense Down')]
+                    self.move_list = [Move('Obamacare', 0, 33, None), Move('Obamehameha', 25, 0, None),
+                                      Move('Let Me Be Clear', 0, 0, 'Attack Up'), Move("Michelle Lunch", 0, 0, 'Defense Down')]
                     
 
                 case 'George Washington':
@@ -96,8 +96,8 @@ class President(pygame.sprite.Sprite):
                 case 'Abraham Lincoln':
                     self.health = 100
                     self.max_health = 100
-                    self.attack = 37.5
-                    self.defense = 37.5
+                    self.attack = 42.5
+                    self.defense = 35
                     self.speed = 37.5
                     self.idle = AbrahamLincoln('enemy').idle
                     self.move_list = [Move('Emancipate', 0, 33, None), Move('Four Score', 20, 0, None),
@@ -107,8 +107,8 @@ class President(pygame.sprite.Sprite):
                     self.health = 100
                     self.max_health = 100
                     self.attack = 30
-                    self.defense = 40
-                    self.speed = 50
+                    self.defense = 42.5
+                    self.speed = 40
                     self.idle = BillClinton('enemy').idle
                     self.move_list = [Move('Sign NAFTA', 0, 0, 'Attack Up'), Move('Ms. Lewinsky?', 0, 0, 'Defense Up'),
                                       Move('Send in Hillary', 30, 0, None), Move('Egg McMuffin', 0, 33, None)]
@@ -117,9 +117,9 @@ class President(pygame.sprite.Sprite):
                 case 'Donald Trump':
                     self.health = 150
                     self.max_health = 150
-                    self.attack = 20
-                    self.defense = 45
-                    self.speed = 12.5
+                    self.attack = 30
+                    self.defense = 35
+                    self.speed = 20
                     self.idle = DonaldTrump('enemy').idle
                     self.move_list = [Move("You're Fired", 20, 0, None), Move('Build a Wall', 0, 0, 'Defense Up'),
                                       Move('Fake News', 0, 0, 'Defense Down'), Move('Uuuuuuge', 0, 50, None)]
@@ -132,18 +132,18 @@ class President(pygame.sprite.Sprite):
                     self.speed = 30
                     self.idle = JoeBiden('enemy').idle
                     self.move_list = [Move('Biden Blast', 25, 0, None), Move('Choclate Chip', 0, 50, None),
-                                      Move('Sniff', 0, 0, 'Defense Down'), Move('Asufutimaeh-', 0, 0, 'Speed Up')]
+                                      Move('Sniff', 0, 0, 'Attack Down'), Move('Asufutimaeh-', 0, 0, 'Speed Up')]
 
                     
                 case 'Obama':
                     self.health = 100
                     self.max_health = 100
                     self.attack = 40
-                    self.defense = 50
+                    self.defense = 35
                     self.speed = 50
                     self.idle = Obama('enemy').idle
-                    self.move_list = [Move('Obamacare', 0, 33, None), Move('OBAMEHAMEHA!!!', 25, 0, None),
-                                      Move('Fellow Americans', 0, 0, 'Attack Up'), Move("Michelle Lunches", 0, 0, 'Defense Down')]
+                    self.move_list = [Move('Obamacare', 0, 33, None), Move('Obamehameha', 25, 0, None),
+                                      Move('Let Me Be Clear', 0, 0, 'Attack Up'), Move("Michelle Lunches", 0, 0, 'Defense Down')]
                     
 
                 case 'George Washington':
