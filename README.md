@@ -1,6 +1,7 @@
 # Pocket Presidents
-A Colin Menuchi Program
-Designed as a Final Project for CS1210
+
+This is a program I initially designed as a final project for UVM's CS1210 course.
+Now, it is a game that I sometimes work on in my freetime.
 
 Pocket Presidents is a hilarious take on the popular website Pokemon Showdown.
 You get to build a team of Pokemon and battle with them, only all the Pokemon are
@@ -24,6 +25,8 @@ shiboken6==6.6.0
 wheel==0.41.2
 
 Instructions For Running & Testing:
+Download all files and folders in this repository and make sure they are all in the same directory.
+Once everything is installed, run the python file titled: pocket_presidents.py
 Upon running the program you will be greeted by the home screen. Wait for the animation to finish playing
 and then click the start button that appears in the middle of the screen. This will take you to the
 president select screen. Use the scroll buttons on the left and right hand sides of the screen to
@@ -33,22 +36,22 @@ This will take you to the battle screen. In the bottom right, click the red "FIG
 the move menu for your current president. Pick one of the four moves and try to defeat your opponent.
 Part of the challenge is trying to guess what each move does, as part of the game is to test your US
 president knowledge. If you understand what a move references, you might get an idea as what it's supposed
-to do. However, for the sake of testing, I have included a catalog of each move and it's effect below so 
-you know what to expect when testing a move. If you can faint all three of your opponent's presidents, you win. 
-If your opponent faints all three of your presidents, you lose. On the win/loss screen, a restart button 
+to do. However, for the sake of testing, I have included a catalog of each move and it's effect below so
+you know what to expect when testing a move. If you can faint all three of your opponent's presidents, you win.
+If your opponent faints all three of your presidents, you lose. On the win/loss screen, a restart button
 and a quit button appear. Click the restart button to play again. Click the quit button to close the game.
 
 How I Tested My Program:
 Each time I added in a new feature I would test it before moving on to the next thing. When making the home screen,
-I made sure the animation worked as intended before moving to the start button. 
-Then I made sure the start button worked, etc. The battle was the hardest part to test as it took so much code. 
-First I made sure that damaging moves worked. Then I added in a speed calculation, which brought new problems that 
-had to be solved. I made sure each president had a speed stat, the one with the higher one moves first, 
-and each round both presidents only move once (assuming neither ofthem die). After that it was 
+I made sure the animation worked as intended before moving to the start button.
+Then I made sure the start button worked, etc. The battle was the hardest part to test as it took so much code.
+First I made sure that damaging moves worked. Then I added in a speed calculation, which brought new problems that
+had to be solved. I made sure each president had a speed stat, the one with the higher one moves first,
+and each round both presidents only move once (assuming neither ofthem die). After that it was
 healing moves and stat change moves. I continued to test each feature when it was implemented.
 Now the game is complete, and although there is a lot of code, the battle mechanics are complex and completely work.
-However, because this is a game, I have also had my friends play test it in order to find bugs, get ideas for 
-balance changes, and get general feedback. 
+However, because this is a game, I have also had my friends play test it in order to find bugs, get ideas for
+balance changes, and get general feedback.
 
 Known Defects (But Not Really):
 There are no defects to my knowledge, but a couple things to note. I in my playthroughs I found that
@@ -58,11 +61,11 @@ do anything when you click them, click them rapidly 2-3 times. If a president di
 the screen, be patient, it always happens eventually. Lastly, if you click the fight button and end up at the confirm
 menu, this is because pygame registered you clicking one of the move buttons, so just click the back button.
 
-Who Did What:
-I did everything, this was a solo project after all. I wrote all the code. I drew all the buttons and sprites.
-
 Citations:
-I claim ownership of all code, presidential sprites, and button images used in this project (most files).
+I wrote all the code and drew all of the president sprites and button images. However, many of the ideas
+that made this game possible were contributed by friends. Collaborating with others to develop this game
+was truly an unforgettable experience.
+
 The following files are not mine, nor do I claim owndership of them:
 (graphics/ampersand.png) - From: https://www.glitschkastudios.com/work/dungeons-dragons
 (graphics/menu_background.jpeg) - From: https://www.bbc.com/news/election-us-2020-54003441
