@@ -26,7 +26,7 @@ wheel==0.41.2
 
 Instructions For Running & Testing:
 Download all files and folders in this repository and make sure they are all in the same directory.
-Once everything is installed, run the python file titled: pocket_presidents.py
+Once everything is downloaded, run the python file titled: pocket_presidents.py
 Upon running the program you will be greeted by the home screen. Wait for the animation to finish playing
 and then click the start button that appears in the middle of the screen. This will take you to the
 president select screen. Use the scroll buttons on the left and right hand sides of the screen to
