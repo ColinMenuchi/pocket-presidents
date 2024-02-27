@@ -9,11 +9,11 @@ US Presidents! Each President has four moves, each holding some surprise in batt
 Moves could deal damage, heal your president, raise your president's stats, or lower
 your oppoenent's stats. The goal is to create a team of three that can defeat the computer's
 team! At the same time, the moves you will use in battle are only intuitive if you know your
-US presidents, which adds an extra challenge. However, unlike Pokemon there are no types and
+US presidents, which adds an extra challenge. However, unlike in Pokemon, there are no types and
 no swapping in battle. This way, battles can resemble presidential debates way more easily.
-If you aren't careful, a battle could become long, drawn-out, or just seemingly go nowhere.
-Do you have what it takes to become a Pocket President master? Only one way to
-find out!
+If the two presidents battling/debating have opposing views, the battle/debate could become long, 
+drawn-out, or just seemingly go nowhere. Do you have what it takes to become a pro Pocket President
+player? Only one way to find out!
 
 Pip-Installable Modules Needed for Running (Along With Their Versions):
 pygame==2.5.2
