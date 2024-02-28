@@ -1010,7 +1010,7 @@ while running:
             if enemy_president.rect.y < 620:
                 enemy_president.move_down()
 
-            battle_text1 = name_font.render('Congradulations! You Won!', False, 'Black')
+            battle_text1 = name_font.render('Congratulations! You Won!', False, 'Black')
             screen.blit(battle_text_box, (battle_text_rect.x, battle_text_rect.y))
             screen.blit(battle_text1, (170, 470))
 
