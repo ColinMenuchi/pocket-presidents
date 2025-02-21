@@ -1,6 +1,6 @@
 # Pocket Presidents
 
-This is a program I initially designed as a final project for UVM's CS1210 course.
+This is a program I initially designed as a personal project to enter in UVM's annual CS Fair.
 Now, it is a game that I sometimes work on in my freetime.
 
 Pocket Presidents is a hilarious take on the popular website Pokemon Showdown.
